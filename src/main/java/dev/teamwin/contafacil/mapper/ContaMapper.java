@@ -15,16 +15,18 @@ public class ContaMapper {
     public ContaResponseDTO toResponse(ContaDomain conta) {
         String nome = conta.getUser() != null ? conta.getUser().getUsername() : null;
         Long idUsuario = conta.getUser() != null ? conta.getUser().getId() : null;
-        return new ContaResponseDTO(nome, conta.getContaCorrente(), idUsuario);
+        return new ContaResponseDTO( conta.getContaCorrente(),
+                conta.getAgencia(),
+                conta.getSaldo());
     }
 
     public SaldoResponseDTO toSaldoResponse(ContaDomain conta) {
         return new SaldoResponseDTO(conta.getSaldo());
     }
 
-    public ContaDomain toDomain(ContaCreateDTO dto, UserDomain user, String agencia) {
+    public ContaDomain toDomain(String contaCorrente, UserDomain user, String agencia) {
         ContaDomain conta = new ContaDomain();
-        conta.setContaCorrente(dto.contaCorrente());
+        conta.setContaCorrente(contaCorrente);
         conta.setAgencia(agencia);
         conta.setUser(user);
         conta.setSaldo(BigDecimal.ZERO.setScale(2));

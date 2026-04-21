@@ -1,4 +1,4 @@
 package dev.teamwin.contafacil.dto.login;
 
-public class ResponseDTO {
+public record ResponseDTO(String name, String token) {
 }

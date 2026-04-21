@@ -1,4 +1,6 @@
 package dev.teamwin.contafacil.dto.conta;
 
-public record ContaResponseDTO(String nome, String contaCorrente, Long idUsuario) {
+import java.math.BigDecimal;
+
+public record ContaResponseDTO(String contaCorrente, String agencia, BigDecimal saldo) {
 }
