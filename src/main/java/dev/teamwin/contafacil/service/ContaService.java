@@ -4,6 +4,7 @@ package dev.teamwin.contafacil.service;
 import dev.teamwin.contafacil.domain.ContaDomain;
 import dev.teamwin.contafacil.domain.UserDomain;
 import dev.teamwin.contafacil.dto.conta.ContaResponseDTO;
+import dev.teamwin.contafacil.dto.conta.SaldoResponseDTO;
 import dev.teamwin.contafacil.mapper.ContaMapper;
 import dev.teamwin.contafacil.repository.ContaRepository;
 import dev.teamwin.contafacil.repository.UserRepository;
@@ -48,6 +49,33 @@ public class ContaService {
         int numero = new Random().nextInt(999999) + 1;
         return String.format("%06d", numero);
     }
+
+
+    public ContaResponseDTO minhaConta(){
+        UserDomain user = (UserDomain) SecurityContextHolder.getContext().
+                getAuthentication()
+                .getPrincipal();
+        return contaRepository.findByUserId(user.getId())
+                .stream()
+                .findFirst()
+                .map(contaMapper::toResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
+    }
+
+    public SaldoResponseDTO consultarSaldo(){
+        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        ContaDomain conta = contaRepository.findByUserId(user.getId())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
+        return new SaldoResponseDTO(conta.getSaldo());
+    }
+
+
+
+
 
 
 
