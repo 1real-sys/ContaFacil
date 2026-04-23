@@ -46,8 +46,12 @@ public class ContaService {
     }
 
     private String gerarContaCorrente(){
-        int numero = new Random().nextInt(999999) + 1;
-        return String.format("%06d", numero);
+        String contaCorrente;
+        do {
+            int numero = new Random().nextInt(999999) + 1;
+            contaCorrente = String.format("%06d", numero);
+        } while (contaRepository.findByContaCorrente(contaCorrente).isPresent());
+        return contaCorrente;
     }
 
 
@@ -70,16 +74,8 @@ public class ContaService {
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
-        return new SaldoResponseDTO(conta.getSaldo());
+                return contaMapper.toSaldoResponse(conta);
     }
-
-
-
-
-
-
-
-
 
 
 }
