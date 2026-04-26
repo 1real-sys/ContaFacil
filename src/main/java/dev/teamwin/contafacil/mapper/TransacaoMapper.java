@@ -19,7 +19,10 @@ public class TransacaoMapper {
                 transacao.getValor(),
                 transacao.getDescricao(),
                 transacao.getObservacao(),
-                transacao.getDataTransacao()
+                transacao.getDataTransacao(),
+                transacao.getSaldoAntes(),
+                transacao.getSaldoDepois()
+
         );
     }
 

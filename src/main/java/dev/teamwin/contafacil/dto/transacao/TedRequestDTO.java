@@ -14,15 +14,10 @@ public record TedRequestDTO(
         @DecimalMin(value = "0.01", inclusive = true)
         BigDecimal valor,
 
-        @NotNull
-        DescricaoTransacao descricaoTed,
-
         @Size(max = 255)
         String observacao,
 
-        LocalDateTime dataTransacao,
-
         @NotNull
-        ContaDomain contaDestino
+        String contaDestino
 ) {
 }

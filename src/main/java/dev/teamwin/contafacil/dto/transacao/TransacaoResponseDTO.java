@@ -6,5 +6,6 @@ import dev.teamwin.contafacil.domain.DescricaoTransacao;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public record TransacaoResponseDTO(BigDecimal valor, DescricaoTransacao descricao, String observacao, LocalDateTime dataTransacao) {
+public record TransacaoResponseDTO(BigDecimal valor, DescricaoTransacao descricao, String observacao, LocalDateTime dataTransacao, BigDecimal saldoAntes,
+                                   BigDecimal saldoDepois) {
 }
