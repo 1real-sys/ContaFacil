@@ -25,8 +25,7 @@ public interface TransacaoRepository extends JpaRepository<TransacaoDomain, Long
             @Param("inicio") LocalDateTime inicio,
             @Param("fim") LocalDateTime fim);
 
-    @Query("SELECT t FROM TransacaoDomain t WHERE t.conta.id = :contaId AND t.dataTransacao < :dataReferencia ORDER BY t.dataTransacao DESC LIMIT 1")
-    Optional<TransacaoDomain> findUltimaTransacaoAntes(
+    Optional<TransacaoDomain> findTopByContaIdAndDataTransacaoBeforeOrderByDataTransacaoDesc(
             @Param("contaId") Long contaId,
             @Param("dataReferencia") LocalDateTime dataReferencia);
 }

@@ -56,7 +56,7 @@ public class ExtratoService {
         }
 
         BigDecimal saldoInicialPeriodo = transacaoRepository
-                .findUltimaTransacaoAntes(conta.getId(), inicio)
+                .findTopByContaIdAndDataTransacaoBeforeOrderByDataTransacaoDesc(conta.getId(), inicio)
                 .map(TransacaoDomain::getSaldoDepois)
                 .orElse(BigDecimal.ZERO);
 
