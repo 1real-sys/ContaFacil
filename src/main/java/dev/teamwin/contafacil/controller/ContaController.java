@@ -1,12 +1,12 @@
 package dev.teamwin.contafacil.controller;
 
 
-import dev.teamwin.contafacil.domain.DescricaoTransacao;
-import dev.teamwin.contafacil.dto.conta.ContaResponseDTO;
-import dev.teamwin.contafacil.dto.conta.SaldoResponseDTO;
-import dev.teamwin.contafacil.dto.extrato.ExtratoResponseDTO;
-import dev.teamwin.contafacil.service.ContaService;
-import dev.teamwin.contafacil.service.ExtratoService;
+import dev.teamwin.contafacil.transacao.DescricaoTransacao;
+import dev.teamwin.contafacil.conta.ContaResponseDTO;
+import dev.teamwin.contafacil.conta.SaldoResponseDTO;
+import dev.teamwin.contafacil.transacao.ExtratoResponseDTO;
+import dev.teamwin.contafacil.conta.ContaService;
+import dev.teamwin.contafacil.transacao.ExtratoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

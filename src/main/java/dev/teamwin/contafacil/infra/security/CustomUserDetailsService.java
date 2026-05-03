@@ -1,7 +1,7 @@
 package dev.teamwin.contafacil.infra.security;
 
-import dev.teamwin.contafacil.domain.UserDomain;
-import dev.teamwin.contafacil.repository.UserRepository;
+import dev.teamwin.contafacil.user.UserDomain;
+import dev.teamwin.contafacil.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

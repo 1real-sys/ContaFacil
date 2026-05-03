@@ -1,0 +1,75 @@
+package dev.teamwin.contafacil.conta;
+
+
+import dev.teamwin.contafacil.user.UserDomain;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Random;
+
+@Service
+@RequiredArgsConstructor
+public class ContaService {
+
+    private final ContaRepository contaRepository;
+    private final ContaMapper contaMapper;
+
+    public ContaResponseDTO abrirConta(){
+        UserDomain user  = (UserDomain) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        if(!contaRepository.findByUserId(user.getId()).isEmpty()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já possui uma conta");
+        }
+
+        String contaCorrente = gerarContaCorrente();
+        String agencia = gerarAgencia();
+
+        ContaDomain conta = contaMapper.toDomain(contaCorrente, user, agencia);
+        conta = contaRepository.save(conta);
+        return contaMapper.toResponse(conta);
+    }
+
+    private String gerarAgencia(){
+        int numero = new Random().nextInt(999) + 1;
+        return String.format("%04d", numero);
+
+    }
+
+    private String gerarContaCorrente(){
+        String contaCorrente;
+        do {
+            int numero = new Random().nextInt(999999) + 1;
+            contaCorrente = String.format("%06d", numero);
+        } while (contaRepository.findByContaCorrente(contaCorrente).isPresent());
+        return contaCorrente;
+    }
+
+
+    public ContaResponseDTO minhaConta(){
+        UserDomain user = (UserDomain) SecurityContextHolder.getContext().
+                getAuthentication()
+                .getPrincipal();
+        return contaRepository.findByUserId(user.getId())
+                .stream()
+                .findFirst()
+                .map(contaMapper::toResponse)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
+    }
+
+    public SaldoResponseDTO consultarSaldo(){
+        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        ContaDomain conta = contaRepository.findByUserId(user.getId())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
+                return contaMapper.toSaldoResponse(conta);
+    }
+
+
+}

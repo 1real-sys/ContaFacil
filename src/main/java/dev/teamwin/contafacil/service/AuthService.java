@@ -1,12 +1,12 @@
 package dev.teamwin.contafacil.service;
 
-import dev.teamwin.contafacil.domain.UserDomain;
+import dev.teamwin.contafacil.user.UserDomain;
 import dev.teamwin.contafacil.dto.login.LoginRequestDTO;
 import dev.teamwin.contafacil.dto.login.RegisterRequestDTO;
 import dev.teamwin.contafacil.dto.login.ResponseDTO;
 import dev.teamwin.contafacil.infra.security.TokenService;
-import dev.teamwin.contafacil.mapper.UserMapper;
-import dev.teamwin.contafacil.repository.UserRepository;
+import dev.teamwin.contafacil.user.UserMapper;
+import dev.teamwin.contafacil.user.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

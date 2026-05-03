@@ -1,10 +1,10 @@
 package dev.teamwin.contafacil.controller;
 
-import dev.teamwin.contafacil.dto.transacao.DepositoRequestDTO;
-import dev.teamwin.contafacil.dto.transacao.SaqueRequestDTO;
-import dev.teamwin.contafacil.dto.transacao.TedRequestDTO;
-import dev.teamwin.contafacil.dto.transacao.TransacaoResponseDTO;
-import dev.teamwin.contafacil.service.TransacaoService;
+import dev.teamwin.contafacil.transacao.DepositoRequestDTO;
+import dev.teamwin.contafacil.transacao.SaqueRequestDTO;
+import dev.teamwin.contafacil.transacao.TedRequestDTO;
+import dev.teamwin.contafacil.transacao.TransacaoResponseDTO;
+import dev.teamwin.contafacil.transacao.TransacaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
