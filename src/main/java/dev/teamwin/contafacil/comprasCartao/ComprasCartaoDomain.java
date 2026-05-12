@@ -39,6 +39,11 @@ public class ComprasCartaoDomain {
         @Column(nullable = false, length = 40)
         private CategoriaEstabelecimento categoria;
 
+        @Enumerated(EnumType.STRING)
+        @Column(nullable = false, length = 20)
+        private StatusCompra status;
+
+
     @PrePersist
     void onCreate() {
         if (dataCompra == null) {

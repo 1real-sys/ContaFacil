@@ -26,6 +26,9 @@ public record ComprasCartaoDTO(
         String ultimos4Digitos,
 
         @NotNull
-        CategoriaEstabelecimento categoria
+        CategoriaEstabelecimento categoria,
+
+        @NotNull
+        StatusCompra status
 ) {
 }

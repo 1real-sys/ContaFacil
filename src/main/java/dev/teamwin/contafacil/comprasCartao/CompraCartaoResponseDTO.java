@@ -10,6 +10,7 @@ public record CompraCartaoResponseDTO(
         String estabelecimento,
         String ultimos4Digitos,
         CategoriaEstabelecimento categoria,
-        Long faturaId
+        Long faturaId,
+        StatusCompra status
 ) {
 }

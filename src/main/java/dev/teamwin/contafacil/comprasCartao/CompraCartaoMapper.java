@@ -14,7 +14,8 @@ public class CompraCartaoMapper {
                 compra.getEstabelecimento(),
                 compra.getUltimos4Digitos(),
                 compra.getCategoria(),
-                compra.getFatura() != null ? compra.getFatura().getId() : null
+                compra.getFatura() != null ? compra.getFatura().getId() : null,
+                compra.getStatus()
         );
     }
 
@@ -24,7 +25,8 @@ public class CompraCartaoMapper {
                 compra.getDataCompra(),
                 compra.getEstabelecimento(),
                 compra.getUltimos4Digitos(),
-                compra.getCategoria()
+                compra.getCategoria(),
+                compra.getStatus()
         );
     }
 
