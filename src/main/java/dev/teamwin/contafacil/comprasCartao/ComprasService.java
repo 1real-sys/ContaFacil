@@ -9,6 +9,7 @@ import dev.teamwin.contafacil.conta.ContaRepository;
 import dev.teamwin.contafacil.fatura.FaturaDomain;
 import dev.teamwin.contafacil.fatura.FaturaRepository;
 import dev.teamwin.contafacil.fatura.FaturaService;
+import dev.teamwin.contafacil.fatura.StatusFatura;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,6 +52,10 @@ public class ComprasService {
         cartaoRepository.save(cartao);
 
         fatura.setValorTotal(fatura.getValorTotal().add(dto.valor()));
+
+        if (fatura.getStatus() == StatusFatura.PAGA){
+            fatura.setStatus(StatusFatura.ABERTA);
+        }
         faturaRepository.save(fatura);
 
         return compraCartaoMapper.toResponse(compra);

@@ -89,6 +89,12 @@ public class FaturaService {
         if (dto.valor().compareTo(fatura.getValorPendente()) > 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor maior que o pendente da fatura");
         }
+        if (conta.getSaldo().compareTo(dto.valor()) < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo insuficiente para pagamento");
+        }
+
+        conta.setSaldo(conta.getSaldo().subtract(dto.valor()));
+        contaRepository.save(conta);
 
         fatura.setValorPago(fatura.getValorPago().add(dto.valor()));
 
