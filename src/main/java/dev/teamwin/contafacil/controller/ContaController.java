@@ -46,4 +46,9 @@ public class ContaController {
         return ResponseEntity.ok(extratoService.extrato(dataInicio, dataFim, tipo));
     }
 
+    @DeleteMapping("/encerrar")
+    public ResponseEntity<String> encerrarConta() {
+        return ResponseEntity.ok(contaService.encerrarConta());
+    }
+
 }

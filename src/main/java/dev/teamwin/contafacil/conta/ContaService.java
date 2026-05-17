@@ -1,6 +1,11 @@
 package dev.teamwin.contafacil.conta;
 
 
+import dev.teamwin.contafacil.cartao.CartaoRepository;
+import dev.teamwin.contafacil.cartao.StatusCartao;
+import dev.teamwin.contafacil.fatura.FaturaRepository;
+import dev.teamwin.contafacil.fatura.StatusFatura;
+import java.math.BigDecimal;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +21,8 @@ public class ContaService {
 
     private final ContaRepository contaRepository;
     private final ContaMapper contaMapper;
+    private final CartaoRepository cartaoRepository;
+    private final FaturaRepository faturaRepository;
 
     public ContaResponseDTO abrirConta(){
         UserDomain user  = (UserDomain) SecurityContextHolder.getContext()
@@ -69,6 +76,46 @@ public class ContaService {
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
                 return contaMapper.toSaldoResponse(conta);
+    }
+
+    public String encerrarConta() {
+        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        ContaDomain conta = contaRepository.findByUserId(user.getId())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
+
+        if (conta.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Conta possui saldo. Realize o saque antes de encerrar");
+        }
+
+        boolean temCartaoAtivo = cartaoRepository.findByContaId(conta.getId())
+                .stream()
+                .anyMatch(c -> c.getStatus() != StatusCartao.CANCELADO);
+
+        if (temCartaoAtivo) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cancele todos os cartões antes de encerrar a conta");
+        }
+
+        boolean temFaturaEmAberto = faturaRepository.findByCartaoIdAndStatus(
+                        cartaoRepository.findByContaId(conta.getId())
+                                .stream()
+                                .findFirst()
+                                .map(c -> c.getId())
+                                .orElse(-1L),
+                        StatusFatura.ABERTA)
+                .stream()
+                .anyMatch(f -> f.getValorPendente().compareTo(BigDecimal.ZERO) > 0);
+
+        if (temFaturaEmAberto) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Possui fatura em aberto. Quite todas as faturas antes de encerrar");
+        }
+
+        contaRepository.delete(conta);
+        return "Conta encerrada com sucesso";
     }
 
 
