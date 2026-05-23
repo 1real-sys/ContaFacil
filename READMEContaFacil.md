@@ -16,12 +16,12 @@ O **ContaFácil** é uma aplicação bancária full-stack que simula operações
 
 ### 👤 Autenticação
 - Cadastro de usuário com e-mail, username e senha
-- Login com e-mail **ou** username
+- Login com e-mail
 - Autenticação stateless via JWT
 - Expiração e validação de token
 
 ### 🏦 Conta Bancária
-- Abertura de conta corrente
+- Abertura de conta corrente com agência gerada automaticamente
 - Consulta de saldo
 - Depósito e saque
 - Transferência entre contas (TED)
@@ -31,20 +31,15 @@ O **ContaFácil** é uma aplicação bancária full-stack que simula operações
 - Registro de todas as movimentações
 - Validação de saldo insuficiente
 - Rollback automático em caso de falha (`@Transactional`)
-- Histórico completo por conta
-
-### 📄 Extrato
-- Extrato por período (data inicial e final)
-- Filtro por tipo de transação (depósito, saque, transferência)
-- Saldo anterior e saldo final no período
+- Extrato por período com filtro por tipo de transação
 
 ### 💳 Cartão de Crédito
-- Emissão de cartão vinculado à conta
-- Limite disponível e utilizado
-- Lançamento de compras
-- Geração de fatura mensal
-- Pagamento de fatura
-- Bloqueio e desbloqueio de cartão
+- Emissão de cartão vinculado à conta (VISA ou MASTERCARD)
+- Solicitação de limite (entre R$ 1.000 e R$ 2.500)
+- Lançamento e cancelamento de compras
+- Geração automática de fatura mensal
+- Pagamento de fatura com débito em conta
+- Bloqueio, desbloqueio e cancelamento de cartão
 
 ---
 
@@ -54,15 +49,15 @@ O **ContaFácil** é uma aplicação bancária full-stack que simula operações
 | Tecnologia | Versão | Uso |
 |---|---|---|
 | Java | 21 | Linguagem principal |
-| Spring Boot | 4.x | Framework base |
+| Spring Boot | 3.x | Framework base |
 | Spring Security | 7.x | Autenticação e autorização |
 | Spring Data JPA | - | Persistência de dados |
 | Hibernate | 7.x | ORM |
 | MySQL | 8.x | Banco de dados |
+| Flyway | - | Versionamento do banco |
 | JWT (Auth0) | - | Tokens de autenticação |
 | Lombok | - | Redução de boilerplate |
 | Maven | - | Gerenciamento de dependências |
-| JUnit 5 + Mockito | - | Testes unitários |
 | Swagger/OpenAPI | - | Documentação da API |
 
 ### Front-end
@@ -87,48 +82,64 @@ O **ContaFácil** é uma aplicação bancária full-stack que simula operações
 ```
 src/
 └── main/java/dev/teamwin/contafacil/
-    ├── config/
-    │   ├── SecurityConfig.java
-    │   └── SwaggerConfig.java
-    ├── controller/
+    ├── auth/
     │   ├── AuthController.java
+    │   ├── AuthService.java
+    │   ├── LoginRequestDTO.java
+    │   ├── RegisterRequestDTO.java
+    │   └── ResponseDTO.java
+    ├── cartao/
+    │   ├── CartaoController.java
+    │   ├── CartaoDomain.java
+    │   ├── CartaoMapper.java
+    │   ├── CartaoRepository.java
+    │   ├── CartaoService.java
+    │   ├── BandeiraCartao.java
+    │   └── StatusCartao.java
+    ├── comprasCartao/
+    │   ├── ComprasController.java
+    │   ├── ComprasCartaoDomain.java
+    │   ├── CompraCartaoMapper.java
+    │   ├── ComprasCartaoRepository.java
+    │   ├── ComprasService.java
+    │   ├── CategoriaEstabelecimento.java
+    │   └── StatusCompra.java
+    ├── conta/
     │   ├── ContaController.java
-    │   ├── TransacaoController.java
-    │   ├── ExtratoController.java
-    │   └── CartaoController.java
-    ├── domain/
-    │   ├── UserDomain.java
     │   ├── ContaDomain.java
-    │   ├── TransacaoDomain.java
-    │   └── CartaoDomain.java
-    ├── dto/
-    │   ├── RegisterDTO.java
-    │   ├── LoginDTO.java
-    │   ├── ContaDTO.java
-    │   ├── TransacaoDTO.java
-    │   ├── ExtratoDTO.java
-    │   └── CartaoDTO.java
-    ├── enums/
-    │   ├── TipoTransacaoEnum.java
-    │   └── StatusCartaoEnum.java
-    ├── mapper/
-    │   ├── UserMapper.java
     │   ├── ContaMapper.java
-    │   └── TransacaoMapper.java
-    ├── repository/
-    │   ├── UserRepository.java
     │   ├── ContaRepository.java
+    │   └── ContaService.java
+    ├── extrato/
+    │   ├── ExtratoController.java
+    │   ├── ExtratoMapper.java
+    │   └── ExtratoService.java
+    ├── fatura/
+    │   ├── FaturaController.java
+    │   ├── FaturaDomain.java
+    │   ├── FaturaMapper.java
+    │   ├── FaturaRepository.java
+    │   ├── FaturaService.java
+    │   └── StatusFatura.java
+    ├── transacao/
+    │   ├── TransacaoController.java
+    │   ├── TransacaoDomain.java
+    │   ├── TransacaoMapper.java
     │   ├── TransacaoRepository.java
-    │   └── CartaoRepository.java
-    ├── security/
-    │   ├── SecurityFilter.java
-    │   └── TokenService.java
-    └── service/
-        ├── AuthService.java
-        ├── ContaService.java
-        ├── TransacaoService.java
-        ├── ExtratoService.java
-        └── CartaoService.java
+    │   └── TransacaoService.java
+    ├── user/
+    │   ├── UserDomain.java
+    │   ├── UserMapper.java
+    │   ├── UserRepository.java
+    │   └── UserService.java
+    └── infra/
+        ├── exception/
+        │   └── GlobalExceptionHandler.java
+        └── security/
+            ├── CustomUserDetailsService.java
+            ├── SecurityConfig.java
+            ├── SecurityFilter.java
+            └── TokenService.java
 ```
 
 ---
@@ -143,34 +154,46 @@ POST /auth/login        → Login (retorna JWT)
 
 ### Conta
 ```
-POST   /contas                  → Abrir conta
-GET    /contas/{id}             → Consultar conta
-GET    /contas/{id}/saldo       → Consultar saldo
-DELETE /contas/{id}             → Encerrar conta
+POST   /conta/abrirConta    → Abrir conta corrente
+GET    /conta/minhaConta    → Consultar dados da conta
+GET    /conta/saldo         → Consultar saldo
+DELETE /conta/encerrar      → Encerrar conta
 ```
 
 ### Transações
 ```
-POST /transacoes/deposito       → Realizar depósito
-POST /transacoes/saque          → Realizar saque
-POST /transacoes/transferencia  → Realizar transferência
+POST /transacao/depositar   → Realizar depósito
+POST /transacao/saque       → Realizar saque
+POST /transacao/ted         → Realizar transferência (TED)
 ```
 
 ### Extrato
 ```
-GET /extrato/{contaId}          → Extrato completo
-GET /extrato/{contaId}?dataInicio=&dataFim=   → Extrato por período
+GET /extrato?dataInicio=&dataFim=        → Extrato por período
+GET /extrato?dataInicio=&dataFim=&tipo=  → Extrato por período e tipo
 ```
 
 ### Cartão
 ```
-POST   /cartoes/{contaId}       → Emitir cartão
-GET    /cartoes/{id}            → Consultar cartão
-POST   /cartoes/{id}/compra     → Lançar compra
-GET    /cartoes/{id}/fatura     → Consultar fatura
-POST   /cartoes/{id}/pagamento  → Pagar fatura
-PATCH  /cartoes/{id}/bloquear   → Bloquear cartão
-PATCH  /cartoes/{id}/desbloquear → Desbloquear cartão
+POST   /cartao/emitirCartao                   → Emitir cartão
+GET    /cartao/meusCartoes                    → Listar cartões
+POST   /cartao/{cartaoId}/solicitarLimite     → Solicitar limite
+POST   /cartao/{cartaoId}/desbloquearCartao   → Ativar cartão
+POST   /cartao/{cartaoId}/bloquearCartao      → Bloquear cartão
+PATCH  /cartao/{cartaoId}/cancelarCartao      → Cancelar cartão
+```
+
+### Compras
+```
+POST  /compras/{cartaoId}/lancar    → Lançar compra
+PATCH /compras/{compraId}/cancelar  → Cancelar compra
+```
+
+### Fatura
+```
+GET  /faturas/{cartaoId}/atual      → Consultar fatura atual
+GET  /faturas/{cartaoId}/historico  → Histórico de faturas
+POST /faturas/{cartaoId}/pagar      → Pagar fatura
 ```
 
 ---
@@ -202,9 +225,7 @@ spring.datasource.password=sua_senha
 
 ```bash
 cd frontend
-
 npm install
-
 ng serve
 ```
 
@@ -213,23 +234,8 @@ Acesse: `http://localhost:4200`
 ### Documentação da API (Swagger)
 Após subir o back-end, acesse:
 ```
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
 ```
-
----
-
-## 🧪 Testes
-
-```bash
-./mvnw test
-```
-
-Cobertura de testes nas regras de negócio:
-- ✅ Saldo insuficiente para saque
-- ✅ Transferência entre contas inexistentes
-- ✅ Limite de cartão excedido
-- ✅ Operação em conta encerrada
-- ✅ Geração correta de fatura
 
 ---
 
@@ -243,7 +249,9 @@ Cobertura de testes nas regras de negócio:
 
 ---
 
-## 🌐 Deploy
+## 🌐 Deploy 
+
+**Em andamento
 
 - Back-end: VPS Ubuntu + Docker + Nginx
 - Front-end: VPS Ubuntu + Nginx
@@ -254,8 +262,8 @@ Cobertura de testes nas regras de negócio:
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+--
 
 ---
 
-<p align="center">Desenvolvido por <a href="https://linkedin.com/in/seu-perfil">seu nome</a></p>
+<p align="center">Em Desenvolvimento por: Juliano =) <a href="https://www.linkedin.com/in/julianojlm/">Meu Linkedin</a></p>
