@@ -22,7 +22,7 @@ public class AuthService {
 
     public ResponseDTO login(LoginRequestDTO dto) {
         UserDomain domain = userRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new RuntimeException("Email já cadastrado"));
+                .orElseThrow(() -> new RuntimeException("Credenciais inválidas"));
         if (!passwordEncoder.matches(dto.password(), domain.getPasswordHash())) {
             throw new RuntimeException("Credenciais inválidas");
         }
