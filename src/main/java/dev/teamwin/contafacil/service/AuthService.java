@@ -8,8 +8,11 @@ import dev.teamwin.contafacil.infra.security.TokenService;
 import dev.teamwin.contafacil.user.UserMapper;
 import dev.teamwin.contafacil.user.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 @AllArgsConstructor
 @Service
 public class AuthService {
@@ -22,9 +25,9 @@ public class AuthService {
 
     public ResponseDTO login(LoginRequestDTO dto) {
         UserDomain domain = userRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new RuntimeException("Credenciais inválidas"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas"));
         if (!passwordEncoder.matches(dto.password(), domain.getPasswordHash())) {
-            throw new RuntimeException("Credenciais inválidas");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
         }
         String token = tokenService.generateToken(domain);
         return new ResponseDTO(domain.getUsername(), token);
@@ -32,7 +35,7 @@ public class AuthService {
 
     public ResponseDTO registrar(RegisterRequestDTO dto) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new RuntimeException("Credenciais inválidas");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Não foi possível completar o cadastro");
         }
         UserDomain domain = userMapper.map(dto);
         domain.setPasswordHash(passwordEncoder.encode(dto.password()));
