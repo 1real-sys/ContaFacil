@@ -10,8 +10,11 @@ import dev.teamwin.contafacil.fatura.FaturaDomain;
 import dev.teamwin.contafacil.fatura.FaturaRepository;
 import dev.teamwin.contafacil.fatura.FaturaService;
 import dev.teamwin.contafacil.fatura.StatusFatura;
+import dev.teamwin.contafacil.service.AuthService;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,9 @@ public class ComprasService {
     private final ComprasCartaoRepository comprasCartaoRepository;
     private final FaturaService faturaService;
     private final FaturaRepository faturaRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+
 
 
     public CompraCartaoResponseDTO lancarCompra(Long cartaoId, CompraCartaoRequestDTO dto){
@@ -82,6 +88,7 @@ public class ComprasService {
         faturaRepository.save(fatura);
 
         compra.setStatus(StatusCompra.CANCELADA);
+        log.info("Compra cancelada com sucesso para o usuário: {}, valor: {}", user.getEmail(), compra.getValor());
         return compraCartaoMapper.toResponse(comprasCartaoRepository.save(compra));
 
     }

@@ -6,8 +6,12 @@ import dev.teamwin.contafacil.cartao.StatusCartao;
 import dev.teamwin.contafacil.fatura.FaturaRepository;
 import dev.teamwin.contafacil.fatura.StatusFatura;
 import java.math.BigDecimal;
+
+import dev.teamwin.contafacil.service.AuthService;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,9 @@ public class ContaService {
     private final CartaoRepository cartaoRepository;
     private final FaturaRepository faturaRepository;
 
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+
+
     public ContaResponseDTO abrirConta(){
         UserDomain user  = (UserDomain) SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -37,6 +44,7 @@ public class ContaService {
 
         ContaDomain conta = contaMapper.toDomain(contaCorrente, user, agencia);
         conta = contaRepository.save(conta);
+        log.info("Nova conta criada com sucesso para o usuário: {}", user.getEmail());
         return contaMapper.toResponse(conta);
     }
 

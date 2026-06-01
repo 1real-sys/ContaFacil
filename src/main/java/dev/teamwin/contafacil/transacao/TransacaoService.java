@@ -2,9 +2,12 @@ package dev.teamwin.contafacil.transacao;
 
 
 import dev.teamwin.contafacil.conta.ContaDomain;
+import dev.teamwin.contafacil.service.AuthService;
 import dev.teamwin.contafacil.user.UserDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,9 @@ public class TransacaoService {
     private final TransacaoRepository transacaoRepository;
     private final TransacaoMapper transacaoMapper;
     private final ContaRepository contaRepository;
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+
 
     @Transactional
     public TransacaoResponseDTO depositar(DepositoRequestDTO dto) {
@@ -37,6 +43,7 @@ public class TransacaoService {
 
         conta.setSaldo(saldoDepois);
         contaRepository.save(conta);
+        log.info("Depósito realizado com sucesso para o usuário: {}, valor: {}", user.getEmail(), dto.valor());
 
         TransacaoDomain transacao = transacaoMapper.fromDepositoRequest(dto, conta, saldoAntes, saldoDepois);
         transacao = transacaoRepository.save(transacao);
@@ -83,6 +90,7 @@ public class TransacaoService {
         TransacaoDomain transacaoOrigem = transacaoMapper.fromTedRequest(
                 dto, contaOrigem, contaDestino, saldoAntesOrigem, saldoDepoisOrigem);
         transacaoRepository.save(transacaoOrigem);
+        log.info("O usuário: {} realizou uma transferência TED para a conta: {}, valor: {}", user.getEmail(), dto.contaDestino(), dto.valor());
 
         return transacaoMapper.toResponse(transacaoOrigem);
     }
@@ -108,6 +116,7 @@ public class TransacaoService {
 
         contaOrigem.setSaldo(saldoDepoisOrigem);
         contaRepository.save(contaOrigem);
+        log.info("Saque realizado com sucesso para o usuário: {}, valor: {}", user.getEmail(), dto.valor());
 
         TransacaoDomain transacao = transacaoMapper.fromSaqueRequest(dto, contaOrigem, saldoAntesOrigem, saldoDepoisOrigem);
         transacao = transacaoRepository.save(transacao);
