@@ -7,6 +7,8 @@ import dev.teamwin.contafacil.conta.ContaDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FaturaService {
+
+    private static final Logger log = LoggerFactory.getLogger(FaturaService.class);
 
     private final FaturaRepository faturaRepository;
     private final CartaoRepository cartaoRepository;
@@ -105,7 +109,9 @@ public class FaturaService {
             fatura.setStatus(StatusFatura.PAGA);
         }
 
-        return faturaMapper.toResponse(faturaRepository.save(fatura));
+        FaturaDomain faturaSalva = faturaRepository.save(fatura);
+        log.info("Pagamento de fatura realizado — usuário: {}, cartão: {}, valor: R$ {}", user.getEmail(), cartaoId, dto.valor());
+        return faturaMapper.toResponse(faturaSalva);
     }
 
 

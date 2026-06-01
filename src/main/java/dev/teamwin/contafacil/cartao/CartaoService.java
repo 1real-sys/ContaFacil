@@ -5,6 +5,8 @@ import dev.teamwin.contafacil.conta.ContaDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.util.Random;
 @AllArgsConstructor
 @Service
 public class CartaoService {
+
+    private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
 
     private final ContaRepository contaRepository;
     private final CartaoRepository cartaoRepository;
@@ -50,6 +54,7 @@ public class CartaoService {
         );
 
         cartao = cartaoRepository.save(cartao);
+        log.info("Cartão emitido com sucesso — usuário: {}, bandeira: {}", user.getEmail(), dto.bandeira());
         return cartaoMapper.toResponse(cartao);
     }
 
@@ -61,7 +66,9 @@ public class CartaoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cartão não está inativo");
         }
         cartao.setStatus(StatusCartao.ATIVO);
-        return cartaoMapper.toResponse(cartaoRepository.save(cartao));
+        CartaoDomain cartaoSalvo = cartaoRepository.save(cartao);
+        log.info("Cartão ativado com sucesso — usuário: {}, cartãoId: {}", user.getEmail(), cartaoId);
+        return cartaoMapper.toResponse(cartaoSalvo);
     }
 
     public CartaoResponseDTO inativarCartao(Long cartaoId){
@@ -72,7 +79,9 @@ public class CartaoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cartão não está ativo");
         }
         cartao.setStatus(StatusCartao.INATIVO);
-        return cartaoMapper.toResponse(cartaoRepository.save(cartao));
+        CartaoDomain cartaoSalvo = cartaoRepository.save(cartao);
+        log.info("Cartão bloqueado com sucesso — usuário: {}, cartãoId: {}", user.getEmail(), cartaoId);
+        return cartaoMapper.toResponse(cartaoSalvo);
     }
 
     public CartaoResponseDTO solicitarLimite(Long cartaoId){
@@ -111,6 +120,7 @@ public class CartaoService {
 
         cartao.setStatus(StatusCartao.CANCELADO);
         cartaoRepository.save(cartao);
+        log.info("Cartão cancelado com sucesso — usuário: {}, cartãoId: {}", user.getEmail(), cartaoId);
         return "Cartão cancelado com sucesso";
     }
 
