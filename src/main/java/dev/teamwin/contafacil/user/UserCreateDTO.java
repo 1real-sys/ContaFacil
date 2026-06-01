@@ -15,7 +15,7 @@ public record UserCreateDTO(
         String email,
 
         @NotBlank
-        @Size(min = 8, max = 100)
+        @Size(min = 10, max = 100)
         String password
 ) {
 }
