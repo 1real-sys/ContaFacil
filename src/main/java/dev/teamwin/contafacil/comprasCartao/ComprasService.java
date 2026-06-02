@@ -92,6 +92,23 @@ public class ComprasService {
         log.info("Compra cancelada com sucesso para o usuário: {}, valor: {}", user.getEmail(), compra.getValor());
         return compraCartaoMapper.toResponse(comprasCartaoRepository.save(compra));
     }
+
+
+
+
+    /**
+     * Estorna uma compra de uma fatura já paga.
+     *
+     * Este mét0do foi criado para corrigir um bug não previsto no fluxo original:
+     * o cancelarCompra() só funcionava para faturas com status ABERTA. Quando o
+     * cliente pagava a fatura e depois tentava cancelar uma compra, ocorria erro
+     * interno pois as regras de negócio são diferentes — em uma fatura paga, o
+     * dinheiro já saiu da conta do cliente e precisa ser devolvido via estorno.
+     *
+     * Diferença entre cancelar e estornar:
+     * - Cancelar: fatura ABERTA, compra não foi cobrada, apenas devolve o limite.
+     * - Estornar: fatura PAGA, compra já foi cobrada, devolve o valor ao saldo.
+     */
     @Transactional
     public CompraCartaoResponseDTO estornarCompra(Long compraId) {
         UserDomain user = getUsuarioAutenticado();
