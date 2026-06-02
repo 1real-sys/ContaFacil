@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -37,7 +38,7 @@ public class ComprasService {
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
 
-
+    @Transactional
     public CompraCartaoResponseDTO lancarCompra(Long cartaoId, CompraCartaoRequestDTO dto){
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
@@ -66,7 +67,7 @@ public class ComprasService {
 
         return compraCartaoMapper.toResponse(compra);
     }
-
+    @Transactional
     public CompraCartaoResponseDTO cancelarCompra(Long compraId){
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);

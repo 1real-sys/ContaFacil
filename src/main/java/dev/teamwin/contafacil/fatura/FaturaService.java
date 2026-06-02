@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -30,7 +31,7 @@ public class FaturaService {
     private final ContaRepository contaRepository;
     private final FaturaMapper faturaMapper;
 
-
+    @Transactional
     public FaturaDomain obterOuCriarFaturaCompetencia(CartaoDomain cartao){
         LocalDateTime agora = LocalDateTime.now();
         int ano = agora.getYear();
@@ -75,7 +76,7 @@ public class FaturaService {
                 .map(faturaMapper::toResponse)
                 .toList();
    }
-
+    @Transactional
     public FaturaResponseDTO pagarFatura(Long cartaoId, PagamentoFaturaRequestDTO dto) {
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);

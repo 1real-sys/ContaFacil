@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -28,7 +29,7 @@ public class CartaoService {
     private final CartaoMapper cartaoMapper;
 
 
-
+    @Transactional
     public CartaoResponseDTO emitirCartao(CartaoCreateDTO dto) {
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
@@ -57,7 +58,7 @@ public class CartaoService {
         log.info("Cartão emitido com sucesso — usuário: {}, bandeira: {}", user.getEmail(), dto.bandeira());
         return cartaoMapper.toResponse(cartao);
     }
-
+    @Transactional
     public CartaoResponseDTO ativarCartao(Long cartaoId){
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
@@ -70,7 +71,7 @@ public class CartaoService {
         log.info("Cartão ativado com sucesso — usuário: {}, cartãoId: {}", user.getEmail(), cartaoId);
         return cartaoMapper.toResponse(cartaoSalvo);
     }
-
+    @Transactional
     public CartaoResponseDTO inativarCartao(Long cartaoId){
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
@@ -83,7 +84,7 @@ public class CartaoService {
         log.info("Cartão bloqueado com sucesso — usuário: {}, cartãoId: {}", user.getEmail(), cartaoId);
         return cartaoMapper.toResponse(cartaoSalvo);
     }
-
+    @Transactional
     public CartaoResponseDTO solicitarLimite(Long cartaoId){
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
@@ -108,7 +109,7 @@ public class CartaoService {
                 .map(cartaoMapper::toResponse)
                 .toList();
     }
-
+    @Transactional
     public String cancelarCartao(Long cartaoId) {
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);

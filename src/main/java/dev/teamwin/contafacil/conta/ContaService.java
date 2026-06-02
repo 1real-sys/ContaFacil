@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Random;
@@ -29,7 +30,7 @@ public class ContaService {
 
     private static final Logger log = LoggerFactory.getLogger(ContaService.class);
 
-
+    @Transactional
     public ContaResponseDTO abrirConta(){
         UserDomain user  = (UserDomain) SecurityContextHolder.getContext()
                 .getAuthentication()
@@ -84,7 +85,7 @@ public class ContaService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
                 return contaMapper.toSaldoResponse(conta);
     }
-
+    @Transactional
     public String encerrarConta() {
         UserDomain user = (UserDomain) SecurityContextHolder.getContext()
                 .getAuthentication()
