@@ -1,14 +1,14 @@
 package dev.teamwin.contafacil.transacao;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public record SaqueRequestDTO(
         @NotNull
         @DecimalMin(value = "0.01", inclusive = true)
+        @DecimalMax(value = "999999.99", inclusive = true)
+        @Digits(integer = 6, fraction = 2)
         BigDecimal valor,
 
         @Size(max = 255)

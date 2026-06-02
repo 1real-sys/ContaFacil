@@ -1,15 +1,14 @@
 package dev.teamwin.contafacil.comprasCartao;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public record CompraCartaoRequestDTO(
         @NotNull
         @DecimalMin(value = "0.01", inclusive = true)
+        @DecimalMax(value = "999999.99", inclusive = true)
+        @Digits(integer = 6, fraction = 2)
         BigDecimal valor,
 
         @NotBlank
