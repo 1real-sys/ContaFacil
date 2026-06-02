@@ -25,4 +25,8 @@ public class ComprasController {
     public ResponseEntity<CompraCartaoResponseDTO> cancelarCompra(@PathVariable Long compraId) {
         return ResponseEntity.ok(comprasService.cancelarCompra(compraId));
     }
+    @PatchMapping("/{compraId}/estornar")
+    public ResponseEntity<CompraCartaoResponseDTO> estornarCompra(@PathVariable Long compraId) {
+        return ResponseEntity.ok(comprasService.estornarCompra(compraId));
+    }
 }

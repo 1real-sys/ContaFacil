@@ -91,9 +91,44 @@ public class ComprasService {
         compra.setStatus(StatusCompra.CANCELADA);
         log.info("Compra cancelada com sucesso para o usuário: {}, valor: {}", user.getEmail(), compra.getValor());
         return compraCartaoMapper.toResponse(comprasCartaoRepository.save(compra));
-
     }
+    @Transactional
+    public CompraCartaoResponseDTO estornarCompra(Long compraId) {
+        UserDomain user = getUsuarioAutenticado();
+        ContaDomain conta = getContaUsuario(user);
 
+        ComprasCartaoDomain compra = comprasCartaoRepository.findById(compraId)
+                .filter(c -> c.getFatura().getCartao().getConta().getId().equals(conta.getId()))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Compra não encontrada"));
+
+        FaturaDomain fatura = compra.getFatura();
+        if(fatura.getStatus() != StatusFatura.PAGA){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estorno disponível apenas para faturas pagas. Para faturas abertas, cancele a compra.");
+        }
+        if(compra.getStatus() == StatusCompra.CANCELADA){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Compra já está cancelada, não é possível estornar");
+        }
+
+        BigDecimal valorEstorno = compra.getValor();
+        fatura.setValorTotal(fatura.getValorTotal().subtract(valorEstorno));
+
+        BigDecimal novoValorPago = fatura.getValorPago().subtract(valorEstorno);
+        fatura.setValorPago(novoValorPago.max(BigDecimal.ZERO)); //nunca fica negativo
+
+        if(fatura.getValorPago().compareTo(fatura.getValorTotal()) < 0){
+            fatura.setStatus(StatusFatura.ABERTA);
+        }
+
+        faturaRepository.save(fatura);
+
+        conta.setSaldo(conta.getSaldo().add(valorEstorno));
+        contaRepository.save(conta);
+
+        compra.setStatus(StatusCompra.CANCELADA);
+        log.info("Compra estornada com sucesso para o usuário: {}, valor: {}", user.getEmail(), compra.getValor());
+
+        return compraCartaoMapper.toResponse(comprasCartaoRepository.save(compra));
+    }
 
 
 
