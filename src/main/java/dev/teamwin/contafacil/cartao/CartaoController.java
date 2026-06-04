@@ -40,6 +40,11 @@ public class CartaoController {
         return ResponseEntity.ok(cartaoService.listarMeusCartoes());
     }
 
+    @GetMapping("/{cartaoId}/dadosSensiveis")
+    public ResponseEntity<CartaoDadosSensiveisDTO> dadosSensiveis(@PathVariable Long cartaoId){
+        return ResponseEntity.ok(cartaoService.verDadosSensiveis(cartaoId));
+    }
+
     @PatchMapping("/{cartaoId}/cancelarCartao")
     public ResponseEntity<String> cancelarCartao(@PathVariable Long cartaoId){
         String mensagem = cartaoService.cancelarCartao(cartaoId);

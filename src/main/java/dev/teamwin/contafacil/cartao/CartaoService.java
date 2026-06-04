@@ -106,6 +106,7 @@ public class CartaoService {
 
         return cartaoRepository.findByContaId(conta.getId())
                 .stream()
+                .filter(c -> c.getStatus() != StatusCartao.CANCELADO)
                 .map(cartaoMapper::toResponse)
                 .toList();
     }
@@ -123,6 +124,13 @@ public class CartaoService {
         cartaoRepository.save(cartao);
         log.info("Cartão cancelado com sucesso — usuário: {}, cartãoId: {}", user.getEmail(), cartaoId);
         return "Cartão cancelado com sucesso";
+    }
+
+    public CartaoDadosSensiveisDTO verDadosSensiveis(Long cartaoId) {
+        UserDomain user = getUsuarioAutenticado();
+        ContaDomain conta = getContaUsuario(user);
+        CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
+        return cartaoMapper.toDadosSensiveis(cartao);
     }
 
 
@@ -152,7 +160,7 @@ public class CartaoService {
         String numero;
         do {
             long parte = (long) (Math.random() * 900_000_000_000_000L) + 100_000_000_000_000L;
-            numero = prefixo + String.valueOf(parte).substring(1);
+            numero = prefixo + parte; // remove o substring(1)
         } while (cartaoRepository.findByNumeroCartao(numero).isPresent());
         return numero;
     }
