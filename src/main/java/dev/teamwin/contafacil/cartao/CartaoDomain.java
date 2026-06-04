@@ -25,6 +25,9 @@ public class CartaoDomain {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @NotNull
     @DecimalMin(value = "0.00", inclusive = true)
     @Column(nullable = false, precision = 19, scale = 2)
