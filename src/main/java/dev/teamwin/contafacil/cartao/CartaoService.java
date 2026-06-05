@@ -3,6 +3,7 @@ package dev.teamwin.contafacil.cartao;
 
 import dev.teamwin.contafacil.conta.ContaDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
+import dev.teamwin.contafacil.fatura.FaturaRepository;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class CartaoService {
     private final ContaRepository contaRepository;
     private final CartaoRepository cartaoRepository;
     private final CartaoMapper cartaoMapper;
+    private final FaturaRepository faturaRepository;
 
 
     @Transactional
@@ -118,6 +120,15 @@ public class CartaoService {
 
         if (cartao.getStatus() == StatusCartao.ATIVO) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bloqueie o cartão antes de cancelar");
+        }
+
+        boolean temFaturaAberta = faturaRepository
+                .findByCartaoIdOrderByAnoDescMesDesc(cartaoId)
+                .stream()
+                .anyMatch(f -> f.getValorPendente().compareTo(BigDecimal.ZERO) > 0);
+
+        if(temFaturaAberta) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Quite todas as faturas pendentes antes de cancelar o cartão");
         }
 
         cartao.setStatus(StatusCartao.CANCELADO);
