@@ -5,6 +5,9 @@ import dev.teamwin.contafacil.cartao.CartaoDomain;
 import dev.teamwin.contafacil.cartao.CartaoRepository;
 import dev.teamwin.contafacil.conta.ContaDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
+import dev.teamwin.contafacil.transacao.DescricaoTransacao;
+import dev.teamwin.contafacil.transacao.TransacaoDomain;
+import dev.teamwin.contafacil.transacao.TransacaoRepository;
 import dev.teamwin.contafacil.user.UserDomain;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,6 +33,7 @@ public class FaturaService {
     private final CartaoRepository cartaoRepository;
     private final ContaRepository contaRepository;
     private final FaturaMapper faturaMapper;
+    private final TransacaoRepository transacaoRepository;
 
     @Transactional
     public FaturaDomain obterOuCriarFaturaCompetencia(CartaoDomain cartao){
@@ -98,8 +102,12 @@ public class FaturaService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Saldo insuficiente para pagamento");
         }
 
+        BigDecimal saldoAntes = conta.getSaldo();
+
         conta.setSaldo(conta.getSaldo().subtract(dto.valor()));
         contaRepository.save(conta);
+
+        BigDecimal saldoDepois = conta.getSaldo();
 
         fatura.setValorPago(fatura.getValorPago().add(dto.valor()));
 
@@ -109,6 +117,16 @@ public class FaturaService {
         if (fatura.getValorPendente().compareTo(BigDecimal.ZERO) == 0) {
             fatura.setStatus(StatusFatura.PAGA);
         }
+
+        TransacaoDomain transacao = new TransacaoDomain();
+        transacao.setDescricao(DescricaoTransacao.PAGAMENTO_FATURA_CARTAO);
+        transacao.setConta(conta);
+        transacao.setValor(dto.valor());
+        transacao.setSaldoAntes(saldoAntes);
+        transacao.setSaldoDepois(saldoDepois);
+        transacao.setObservacao("Pagamento fatura " + fatura.getMes() + "/" + fatura.getAno());
+        transacaoRepository.save(transacao);
+
 
         FaturaDomain faturaSalva = faturaRepository.save(fatura);
         log.info("Pagamento de fatura realizado — usuário: {}, cartão: {}, valor: R$ {}", user.getEmail(), cartaoId, dto.valor());
