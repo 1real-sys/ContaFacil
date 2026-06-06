@@ -35,7 +35,7 @@ public class ComprasService {
     private final FaturaService faturaService;
     private final FaturaRepository faturaRepository;
 
-    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+    private static final Logger log = LoggerFactory.getLogger(ComprasService.class);
 
 
     @Transactional
