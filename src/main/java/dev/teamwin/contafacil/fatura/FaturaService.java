@@ -81,15 +81,17 @@ public class FaturaService {
                 .toList();
    }
     @Transactional
-    public FaturaResponseDTO pagarFatura(Long cartaoId, PagamentoFaturaRequestDTO dto) {
+    public FaturaResponseDTO pagarFatura(Long faturaId, PagamentoFaturaRequestDTO dto) {
         UserDomain user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
-        CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
 
-        LocalDateTime agora = LocalDateTime.now();
-        FaturaDomain fatura = faturaRepository
-                .findByCartaoIdAndAnoAndMes(cartao.getId(), agora.getYear(), agora.getMonthValue())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Nenhuma fatura encontrada"));
+        FaturaDomain fatura = faturaRepository.findById(faturaId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Fatura não encontrada"));
+
+        CartaoDomain cartao = fatura.getCartao();
+        if (!cartao.getConta().getId().equals(conta.getId())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Fatura não encontrada");
+        }
 
         if (fatura.getStatus() == StatusFatura.PAGA) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Fatura já está paga");
@@ -124,15 +126,13 @@ public class FaturaService {
         transacao.setValor(dto.valor());
         transacao.setSaldoAntes(saldoAntes);
         transacao.setSaldoDepois(saldoDepois);
-        transacao.setObservacao("Pagamento fatura " + fatura.getMes() + "/" + fatura.getAno());
+        transacao.setObservacao("Pagamento fatura: " + fatura.getMes() + "/" + fatura.getAno());
         transacaoRepository.save(transacao);
 
-
         FaturaDomain faturaSalva = faturaRepository.save(fatura);
-        log.info("Pagamento de fatura realizado — usuário: {}, cartão: {}, valor: R$ {}", user.getEmail(), cartaoId, dto.valor());
+        log.info("Pagamento de fatura realizado — usuário: {}, faturaId: {}, valor: R$ {}", user.getEmail(), faturaId, dto.valor());
         return faturaMapper.toResponse(faturaSalva);
     }
-
 
 
     private UserDomain getUsuarioAutenticado() {

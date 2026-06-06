@@ -25,11 +25,11 @@ public class FaturaController {
         return ResponseEntity.ok(faturaService.listarFaturas(cartaoId));
     }
 
-    @PostMapping("/{cartaoId}/pagar")
+    @PostMapping("/{faturaId}/pagar")
     public ResponseEntity<FaturaResponseDTO> pagarFatura(
-            @PathVariable Long cartaoId,
+            @PathVariable Long faturaId,
             @Valid @RequestBody PagamentoFaturaRequestDTO dto) {
-        return ResponseEntity.ok(faturaService.pagarFatura(cartaoId, dto));
+        return ResponseEntity.ok(faturaService.pagarFatura(faturaId, dto));
     }
 
 
