@@ -1,6 +1,8 @@
 .dashboard {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
   animation: fadeIn 0.4s ease;
 }
 
@@ -32,6 +34,9 @@
   padding: 32px;
   margin-bottom: 28px;
   box-shadow: 0 20px 60px rgba(130, 10, 209, 0.25);
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .balance-label {
@@ -52,6 +57,9 @@
   font-weight: 800;
   color: white;
   letter-spacing: -0.5px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .balance-hidden {
@@ -93,10 +101,17 @@
 
 .quick-actions {
   display: flex;
-  justify-content: center;
   gap: 16px;
   margin-bottom: 28px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 4px 12px 8px 12px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .action-btn {
@@ -111,6 +126,7 @@
   border-radius: 14px;
   transition: all 0.2s;
   min-width: 72px;
+  flex-shrink: 0;
 }
 
 .action-btn:hover:not(:disabled) {
@@ -150,6 +166,8 @@
 
 .card-container {
   margin-bottom: 28px;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .credit-card {
@@ -159,6 +177,8 @@
   position: relative;
   overflow: hidden;
   transition: transform 0.3s;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .credit-card:hover {
@@ -229,17 +249,22 @@
   letter-spacing: 3px;
   margin-bottom: 20px;
   font-family: 'Courier New', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cc-footer {
   display: flex;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
 .cc-limit {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
 .cc-limit-label {
@@ -290,6 +315,8 @@
   border: 1px solid #29282f;
   border-radius: 16px;
   padding: 24px;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .fatura-header-row {
@@ -297,6 +324,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+  gap: 8px;
+  min-width: 0;
 }
 
 .fatura-header-row h4 {
@@ -329,9 +358,11 @@
 
 .fatura-footer-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   font-size: 13px;
   color: #8a8a94;
+  min-width: 0;
 }
 
 .skeleton-fatura {
@@ -590,26 +621,63 @@
   }
 }
 
-@media (max-width: 320px) {
+@media (max-width: 430px) {
+  .balance-card {
+    padding: 20px;
+    border-radius: 14px;
+  }
+
   .balance-value {
     font-size: 26px;
   }
 
   .quick-actions {
-    gap: 4px;
+    gap: 6px;
+    padding: 4px 8px 8px 8px;
   }
 
   .action-btn {
     padding: 8px;
-    min-width: 60px;
+    min-width: 64px;
   }
 
   .action-circle {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
   }
 
   .action-btn span {
     font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .credit-card {
+    padding: 16px;
+  }
+
+  .cc-number {
+    font-size: 15px;
+    letter-spacing: 1.5px;
+  }
+
+  .cc-footer {
+    gap: 14px;
+  }
+
+  .cc-limit-value {
+    font-size: 13px;
+  }
+
+  .fatura-card {
+    padding: 18px;
+  }
+
+  .fatura-valor {
+    font-size: 24px;
+  }
+
+  .transaction-item {
+    padding: 12px 12px;
+    gap: 10px;
   }
 }
