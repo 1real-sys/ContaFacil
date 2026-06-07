@@ -41,7 +41,7 @@ export class Faturas implements OnInit {
 
   comprasVisiveis = computed(() => {
     const compras = this.faturaSelecionada()?.compras ?? [];
-    return compras.slice(0, this.visibleCount());
+    return [...compras].reverse().slice(0, this.visibleCount());
   });
 
   mostrarMais = computed(() => {
