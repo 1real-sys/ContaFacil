@@ -1,0 +1,92 @@
+<div class="layout" [class.collapsed]="collapsed()">
+  <aside class="sidebar" [class.collapsed]="collapsed()" [class.mobile-open]="mobileOpen()">
+    <div class="sidebar-header">
+      <div class="logo" routerLink="/dashboard">
+        <span class="logo-icon">CF</span>
+        @if (!collapsed()) {
+          <span class="logo-text">ContaFacil</span>
+        }
+      </div>
+      <button class="toggle-btn desktop-only" (click)="toggleSidebar()" [attr.aria-label]="collapsed() ? 'Expandir menu' : 'Recolher menu'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          @if (collapsed()) {
+            <polyline points="9 18 15 12 9 6" />
+          } @else {
+            <polyline points="15 18 9 12 15 6" />
+          }
+        </svg>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-item" (click)="closeMobile()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </svg>
+        @if (!collapsed()) { <span>Dashboard</span> }
+      </a>
+
+      <a routerLink="/transacoes" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 1v22M17 5H9.5A3.5 3.5 0 0 0 6 8.5 3.5 3.5 0 0 0 9.5 12H14a3.5 3.5 0 0 1 3.5 3.5A3.5 3.5 0 0 1 14 19H6" />
+        </svg>
+        @if (!collapsed()) { <span>Transações</span> }
+      </a>
+
+      <a routerLink="/cartoes" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" />
+          <line x1="1" y1="10" x2="23" y2="10" />
+        </svg>
+        @if (!collapsed()) { <span>Cartões</span> }
+      </a>
+
+      <a routerLink="/faturas" routerLinkActive="active" class="nav-item" (click)="closeMobile()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        @if (!collapsed()) { <span>Faturas</span> }
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar">{{ userName().charAt(0).toUpperCase() }}</div>
+        @if (!collapsed()) {
+          <span class="username">{{ userName() }}</span>
+        }
+      </div>
+      <button class="logout-btn" (click)="logout()" [attr.aria-label]="'Sair'">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+        @if (!collapsed()) { <span>Sair</span> }
+      </button>
+    </div>
+  </aside>
+
+  <div class="overlay" [class.visible]="mobileOpen()" (click)="closeMobile()"></div>
+
+  <main class="main-content">
+    <header class="topbar">
+      <button class="menu-btn mobile-only" (click)="toggleMobile()" aria-label="Abrir menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+      <span class="page-title">ContaFacil</span>
+      <div></div>
+    </header>
+    <div class="content-area">
+      <router-outlet />
+    </div>
+  </main>
+</div>

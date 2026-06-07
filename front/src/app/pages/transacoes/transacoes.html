@@ -1,0 +1,127 @@
+<div class="transacoes-page">
+  <h2>Transações</h2>
+
+  <div class="tabs">
+    @for (tab of tabs; track tab) {
+      <button
+        class="tab-btn"
+        [class.active]="activeTab() === tab"
+        (click)="setTab(tab)"
+      >
+        @if (tab === 'depositar') {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" />
+          </svg>
+        } @else if (tab === 'sacar') {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" />
+          </svg>
+        } @else {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" />
+          </svg>
+        }
+        {{ tabLabel(tab) }}
+      </button>
+    }
+  </div>
+
+  <div class="tab-content">
+    @if (comprovante()) {
+      <div class="receipt-card">
+        <div class="receipt-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#04d361" stroke-width="2">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <h3>Transação realizada</h3>
+        <p class="receipt-desc">{{ descricaoLabel(comprovante()!.descricao) }}</p>
+
+        <div class="receipt-details">
+          <div class="receipt-row">
+            <span class="receipt-label">Valor</span>
+            <span class="receipt-value" [class.negative]="comprovante()!.descricao !== 'DEPOSITO'">
+              {{ comprovante()!.descricao === 'DEPOSITO' ? '+' : '-' }}{{ formatCurrency(comprovante()!.valor) }}
+            </span>
+          </div>
+
+          @if (comprovante()!.observacao) {
+            <div class="receipt-row">
+              <span class="receipt-label">Observação</span>
+              <span class="receipt-obs">{{ comprovante()!.observacao }}</span>
+            </div>
+          }
+
+          <div class="receipt-row">
+            <span class="receipt-label">Data / Hora</span>
+            <span>{{ formatDateTime(comprovante()!.dataTransacao) }}</span>
+          </div>
+
+          <div class="receipt-row destaque">
+            <span class="receipt-label">Saldo atualizado</span>
+            <span class="receipt-saldo">{{ formatCurrency(comprovante()!.saldoDepois) }}</span>
+          </div>
+        </div>
+
+        <button class="btn-new" (click)="novo()">Nova transação</button>
+      </div>
+    } @else {
+      @if (error()) {
+        <div class="alert alert-error">{{ error() }}</div>
+      }
+
+      <form (ngSubmit)="onSubmit()" class="tx-form">
+        <div class="form-group">
+          <label for="tx-valor">Valor</label>
+          <div class="input-prefix">
+            <span class="prefix">R$</span>
+            <input
+              id="tx-valor"
+              type="text"
+              inputmode="decimal"
+              [(ngModel)]="valor"
+              name="valor"
+              placeholder="0,00"
+              required
+            />
+          </div>
+        </div>
+
+        @if (activeTab() === 'transferir') {
+          <div class="form-group">
+            <label for="tx-destino">Conta destino</label>
+            <input
+              id="tx-destino"
+              type="text"
+              [(ngModel)]="contaDestino"
+              name="contaDestino"
+              placeholder="Número da conta"
+              required
+            />
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="tx-obs">Observação <span class="optional">(opcional)</span></label>
+          <input
+            id="tx-obs"
+            type="text"
+            [(ngModel)]="observacao"
+            name="observacao"
+            [placeholder]="activeTab() === 'depositar' ? 'Ex: Depósito em dinheiro' : activeTab() === 'sacar' ? 'Ex: Saque para despesas' : 'Ex: Pagamento de aluguel'"
+            maxlength="255"
+          />
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading()">
+          @if (loading()) {
+            <span class="spinner"></span>
+            Processando...
+          } @else {
+            {{ tabLabel(activeTab()) }}
+          }
+        </button>
+      </form>
+    }
+  </div>
+</div>

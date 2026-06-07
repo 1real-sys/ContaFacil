@@ -1,0 +1,175 @@
+<div class="faturas-page">
+  <h2>Faturas</h2>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (loadingCartao() || loadingFaturas()) {
+    <div class="skeleton-big"></div>
+    <div class="skeleton-list">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
+  } @else if (!cartaoAtivo()) {
+    <div class="empty-state">
+      <p>Você não possui um cartão ativo.</p>
+    </div>
+  } @else if (faturaSelecionada()) {
+    <div class="fatura-header-card">
+      <div class="fh-top">
+        <div>
+          <h3>Fatura de {{ nomeMes(faturaSelecionada()!.mes) }} / {{ faturaSelecionada()!.ano }}</h3>
+          <span class="fh-status" [class]="faturaSelecionada()!.status.toLowerCase()">
+            {{ statusLabel(faturaSelecionada()!.status) }}
+          </span>
+        </div>
+
+        @if (faturas().length > 1) {
+          <select class="mes-select" [ngModel]="faturaSelecionada()!.id" (ngModelChange)="selecionarFatura(findById($event))">
+            @for (f of faturas(); track f.id) {
+              <option [value]="f.id">{{ nomeMes(f.mes) }} / {{ f.ano }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <div class="fh-datas">
+        <span>Fechamento: {{ formatDate(faturaSelecionada()!.dataFechamento) }}</span>
+        <span class="dot">&#183;</span>
+        <span>Vencimento: {{ formatDate(faturaSelecionada()!.dataVencimento) }}</span>
+      </div>
+
+      <div class="fh-valores">
+        <div class="fh-v">
+          <span class="fh-v-label">Total</span>
+          <span class="fh-v-value">{{ formatCurrency(faturaSelecionada()!.valorTotal) }}</span>
+        </div>
+        <div class="fh-v">
+          <span class="fh-v-label">Pago</span>
+          <span class="fh-v-value green">{{ formatCurrency(faturaSelecionada()!.valorPago) }}</span>
+        </div>
+        <div class="fh-v">
+          <span class="fh-v-label">Pendente</span>
+          <span class="fh-v-value" [class.red]="faturaSelecionada()!.valorPendente > 0">
+            {{ formatCurrency(faturaSelecionada()!.valorPendente) }}
+          </span>
+        </div>
+      </div>
+
+      @if (faturaSelecionada()!.valorPendente > 0) {
+        @if (!showPagar()) {
+          <button class="btn-pagar" (click)="showPagar.set(true)">Pagar Fatura</button>
+        } @else {
+          <div class="pagar-form">
+            @if (pagarError()) {
+              <div class="alert alert-error small">{{ pagarError() }}</div>
+            }
+            <div class="pagar-row">
+              <div class="input-prefix flex-1">
+                <span class="prefix">R$</span>
+                <input type="text" inputmode="decimal" [(ngModel)]="valorPagamento" name="valorPag" placeholder="0,00" />
+              </div>
+              <button class="btn-pagar-confirm" (click)="pagarFatura()" [disabled]="pagando()">
+                @if (pagando()) { <span class="spinner"></span> } @else { Pagar }
+              </button>
+              <button class="btn-outline" (click)="showPagar.set(false)">Cancelar</button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    @if (comprasVisiveis().length > 0) {
+      <div class="compras-section">
+        <h4>Compras</h4>
+        <div class="compras-list">
+          @for (compra of comprasVisiveis(); track compra.id) {
+            <div class="compra-item" (click)="abrirDetalhe(compra)">
+              <div class="compra-info">
+                <span class="compra-estab">{{ compra.estabelecimento }}</span>
+                <span class="compra-meta">{{ categoriaLabel(compra.categoria) }} &#183; {{ formatDateTime(compra.dataCompra) }}</span>
+              </div>
+              <div class="compra-right">
+                <span class="compra-valor">-{{ formatCurrency(compra.valor) }}</span>
+                <span class="compra-status" [class]="compra.status.toLowerCase()">
+                  {{ compra.status === 'AUTORIZADA' ? 'OK' : statusLabel(compra.status) }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (mostrarMais()) {
+          <button class="btn-ver-mais" (click)="verMais()">Ver mais</button>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>Nenhuma compra nesta fatura.</p>
+      </div>
+    }
+  } @else {
+    <div class="empty-state">
+      <p>Nenhuma fatura encontrada.</p>
+    </div>
+  }
+
+  @if (compraDetalhe()) {
+    <div class="modal-overlay" (click)="fecharDetalhe()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <h4>Detalhes da compra</h4>
+
+        <div class="modal-rows">
+          <div class="modal-row">
+            <span>Estabelecimento</span>
+            <span>{{ compraDetalhe()!.estabelecimento }}</span>
+          </div>
+          <div class="modal-row">
+            <span>Categoria</span>
+            <span>{{ categoriaLabel(compraDetalhe()!.categoria) }}</span>
+          </div>
+          <div class="modal-row">
+            <span>Valor</span>
+            <span class="neg">{{ formatCurrency(compraDetalhe()!.valor) }}</span>
+          </div>
+          <div class="modal-row">
+            <span>Data</span>
+            <span>{{ formatDateTime(compraDetalhe()!.dataCompra) }}</span>
+          </div>
+          <div class="modal-row">
+            <span>Cartão</span>
+            <span>**** {{ compraDetalhe()!.ultimos4Digitos }}</span>
+          </div>
+          <div class="modal-row">
+            <span>Status</span>
+            <span class="badge" [class]="compraDetalhe()!.status.toLowerCase()">
+              {{ statusLabel(compraDetalhe()!.status) }}
+            </span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          @if (confirmandoAcao()) {
+            <p class="confirm-text">
+              @if (confirmandoAcao() === 'cancelar') { Deseja cancelar esta compra? }
+              @if (confirmandoAcao() === 'estornar') { Deseja solicitar o estorno desta compra? }
+            </p>
+            <button class="btn-danger" (click)="confirmandoAcao() === 'cancelar' ? executarCancelamento() : executarEstorno()" [disabled]="cancelando() || estornando()">
+              @if (cancelando() || estornando()) { <span class="spinner"></span> } @else { Confirmar }
+            </button>
+            <button class="btn-outline" (click)="cancelarConfirmacao()">Voltar</button>
+          } @else if (compraDetalhe()!.status === 'AUTORIZADA') {
+            @if (faturaSelecionada()!.status === 'ABERTA') {
+              <button class="btn-danger-outline" (click)="confirmarCancelamento()">Cancelar Compra</button>
+            } @else if (faturaSelecionada()!.status === 'PAGA') {
+              <button class="btn-danger-outline" (click)="confirmarEstorno()">Solicitar Estorno</button>
+            }
+          }
+          <button class="btn-outline" (click)="fecharDetalhe()">Fechar</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

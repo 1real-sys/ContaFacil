@@ -1,0 +1,106 @@
+<div class="extrato-page">
+  <h2>Extrato</h2>
+
+  <div class="filters-card">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="dt-inicio">Data inicial</label>
+        <input
+          id="dt-inicio"
+          type="date"
+          [(ngModel)]="dataInicio"
+          name="dataInicio"
+          [max]="hoje"
+        />
+      </div>
+      <div class="filter-group">
+        <label for="dt-fim">Data final</label>
+        <input
+          id="dt-fim"
+          type="date"
+          [(ngModel)]="dataFim"
+          name="dataFim"
+          [max]="hoje"
+        />
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-group">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" [(ngModel)]="tipo" name="tipo">
+          <option value="">Todos</option>
+          <option value="DEPOSITO">Depósito</option>
+          <option value="SAQUE">Saque</option>
+          <option value="TED">TED</option>
+          <option value="PAGAMENTO_FATURA_CARTAO">Pagamento Fatura</option>
+        </select>
+      </div>
+      <button class="btn-filtrar" (click)="filtrar()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner"></span>
+          Carregando...
+        } @else {
+          Filtrar
+        }
+      </button>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="skeleton-list">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
+  } @else if (extrato()) {
+    <div class="balance-summary">
+      <div class="summary-item">
+        <span class="summary-label">Saldo inicial do período</span>
+        <span class="summary-value">{{ formatCurrency(extrato()!.saldoInicialPeriodo) }}</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Saldo final do período</span>
+        <span class="summary-value destaque">{{ formatCurrency(extrato()!.saldoFinalPeriodo) }}</span>
+      </div>
+    </div>
+
+    @if (itensVisiveis().length > 0) {
+      <div class="transaction-list">
+        @for (tx of itensVisiveis(); track tx.transacaoId) {
+          <div class="tx-item">
+            <div class="tx-icon" [class]="tx.tipo.toLowerCase()">
+              {{ tipoIcon(tx.tipo) }}
+            </div>
+            <div class="tx-info">
+              <span class="tx-type">{{ tipoLabel(tx.tipo) }}</span>
+              @if (tx.observacao) {
+                <span class="tx-note">{{ tx.observacao }}</span>
+              }
+              <span class="tx-date">{{ formatDateTime(tx.dataTransacao) }}</span>
+            </div>
+            <div class="tx-value" [class]="tx.tipo.toLowerCase()">
+              {{ tx.tipo === 'DEPOSITO' ? '+' : '-' }}{{ formatCurrency(tx.valor) }}
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (mostrarMais()) {
+        <button class="btn-ver-mais" (click)="verMais()">Ver mais</button>
+      }
+    } @else {
+      <div class="empty-state">
+        <p>Nenhuma transação encontrada no período.</p>
+      </div>
+    }
+  } @else {
+    <div class="empty-state">
+      <p>Selecione um período e clique em Filtrar.</p>
+    </div>
+  }
+</div>

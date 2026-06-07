@@ -1,0 +1,207 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h2>Olá, {{ userName() }}</h2>
+    <p>Resumo da sua conta</p>
+  </div>
+
+  <div class="balance-card">
+    <div class="balance-label">Saldo em conta</div>
+    @if (loadingConta()) {
+      <div class="skeleton skeleton-balance"></div>
+    } @else if (conta()) {
+      <div class="balance-row">
+        <div class="balance-value">
+          @if (balanceVisible()) {
+            {{ formatCurrency(conta()!.saldo) }}
+          } @else {
+            <span class="balance-hidden">R$ &#x2022;&#x2022;&#x2022;&#x2022;&#x2022;&#x2022;</span>
+          }
+        </div>
+        <button class="eye-btn" (click)="toggleBalance()" [attr.aria-label]="balanceVisible() ? 'Ocultar saldo' : 'Mostrar saldo'">
+          @if (balanceVisible()) {
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          } @else {
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+              <line x1="1" y1="1" x2="23" y2="23" />
+            </svg>
+          }
+        </button>
+      </div>
+      <div class="balance-details">
+        <span>Ag {{ conta()!.agencia }}</span>
+        <span class="dot">&#183;</span>
+        <span>CC {{ conta()!.contaCorrente }}</span>
+      </div>
+    } @else {
+      <div class="empty-conta">
+        <p>Você ainda não possui uma conta.</p>
+        @if (erroCriarConta()) {
+          <p class="empty-error">{{ erroCriarConta() }}</p>
+        }
+        <button class="btn-create" (click)="criarConta()" [disabled]="criandoConta()">
+          @if (criandoConta()) {
+            <span class="spinner-white"></span>
+            Criando...
+          } @else {
+            Criar Conta
+          }
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="quick-actions">
+    <button class="action-btn" (click)="navigateToTransacoes('depositar')">
+      <div class="action-circle action-deposit">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" />
+        </svg>
+      </div>
+      <span>Depositar</span>
+    </button>
+
+    <button class="action-btn" (click)="navigateToTransacoes('transferir')">
+      <div class="action-circle action-transfer">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19" /><polyline points="19 12 12 19 5 12" />
+        </svg>
+      </div>
+      <span>Transferir</span>
+    </button>
+
+    <button class="action-btn" (click)="router.navigate(['/cartoes'])">
+      <div class="action-circle action-cards">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="1" y="4" width="22" height="16" rx="2" />
+          <line x1="1" y1="10" x2="23" y2="10" />
+        </svg>
+      </div>
+      <span>Cartões</span>
+    </button>
+
+    <button class="action-btn" (click)="router.navigate(['/faturas'])">
+      <div class="action-circle action-bill">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+        </svg>
+      </div>
+      <span>Pagar Fatura</span>
+    </button>
+
+    <button class="action-btn" (click)="router.navigate(['/extrato'])">
+      <div class="action-circle action-statement">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+      </div>
+      <span>Extrato</span>
+    </button>
+  </div>
+
+  @if (loadingCartoes()) {
+    <div class="card-container">
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  } @else {
+    @let card = cartaoAtivo();
+    @if (card) {
+      <div class="card-container">
+        <div class="credit-card" [class]="card.bandeira.toLowerCase()">
+          <div class="cc-header">
+            <span class="cc-bank">ContaFacil</span>
+            <span class="cc-brand">{{ card.bandeira }}</span>
+          </div>
+          <div class="cc-chip">
+            <div class="chip-inner"></div>
+          </div>
+          <div class="cc-number">{{ card.numeroCartaoOculto }}</div>
+          <div class="cc-footer">
+            <div class="cc-limit">
+              <span class="cc-limit-label">Limite disponível</span>
+              <span class="cc-limit-value">{{ formatCurrency(card.limiteDisponivel) }}</span>
+            </div>
+            <div class="cc-limit">
+              <span class="cc-limit-label">Limite total</span>
+              <span class="cc-limit-value secondary">{{ formatCurrency(card.limiteTotal) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else if (!loadingCartoes()) {
+      <div class="card-container">
+        <div class="credit-card placeholder-card">
+          <div class="cc-header">
+            <span class="cc-bank">ContaFacil</span>
+          </div>
+          <p class="cc-empty">Emita já o seu cartão e solicite limite!</p>
+          <button class="btn-solicitar" (click)="router.navigate(['/cartoes'])">Solicitar Cartão</button>
+        </div>
+      </div>
+    }
+  }
+
+  @if (loadingFatura()) {
+    <div class="card-container">
+      <div class="skeleton skeleton-fatura"></div>
+    </div>
+  } @else if (faturaAtual()) {
+    <div class="card-container">
+      <div class="fatura-card">
+        <div class="fatura-header-row">
+          <h4>Fatura Atual</h4>
+          <span class="fatura-status" [class]="faturaAtual()!.status.toLowerCase()">
+            {{ faturaAtual()!.status }}
+          </span>
+        </div>
+        <div class="fatura-valor">{{ formatCurrency(faturaAtual()!.valorTotal) }}</div>
+        <div class="fatura-footer-row">
+          <span>Pago: {{ formatCurrency(faturaAtual()!.valorPago) }}</span>
+          <span class="dot">&#183;</span>
+          <span>Pendente: {{ formatCurrency(faturaAtual()!.valorPendente) }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="transactions-section">
+    <h3>Últimas transações</h3>
+
+    @if (loadingTransacoes()) {
+      <div class="skeleton-list">
+        @for (i of [1,2,3,4]; track i) {
+          <div class="skeleton skeleton-row"></div>
+        }
+      </div>
+    } @else if (ultimasTransacoes().length > 0) {
+      <div class="transaction-list">
+        @for (tx of ultimasTransacoes(); track tx.transacaoId) {
+          <div class="transaction-item">
+            <div class="tx-icon" [class]="tipoClass(tx.tipo)">{{ tipoIcon(tx.tipo) }}</div>
+            <div class="tx-info">
+              <span class="tx-label">{{ tipoLabel(tx.tipo) }}</span>
+              @if (tx.observacao) {
+                <span class="tx-note">{{ tx.observacao }}</span>
+              }
+            </div>
+            <div class="tx-details">
+              <span class="tx-value" [class]="tipoClass(tx.tipo)">
+                {{ tx.tipo === 'DEPOSITO' ? '+' : '-' }}{{ formatCurrency(tx.valor) }}
+              </span>
+              <span class="tx-date">{{ formatDate(tx.dataTransacao) }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <p>Nenhuma transação recente.</p>
+      </div>
+    }
+  </div>
+</div>
