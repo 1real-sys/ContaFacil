@@ -12,13 +12,13 @@
 h2 {
   font-size: 22px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 20px;
 }
 
 .filters-card {
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
@@ -43,16 +43,16 @@ h2 {
 .filter-group label {
   font-size: 13px;
   font-weight: 500;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
 }
 
 .filter-group input,
 .filter-group select {
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1.5px solid #29282f;
-  background: #1e1d25;
-  color: #e1e1e6;
+  border: 1.5px solid var(--cf-border);
+  background: var(--cf-bg-elevated);
+  color: var(--cf-text-primary);
   font-size: 14px;
   transition: border-color 0.2s;
   outline: none;
@@ -61,13 +61,13 @@ h2 {
 
 .filter-group input:focus,
 .filter-group select:focus {
-  border-color: #820ad1;
+  border-color: var(--cf-primary);
 }
 
 .btn-filtrar {
   padding: 12px 28px;
   border-radius: 10px;
-  background: #820ad1;
+  background: var(--cf-primary);
   color: white;
   font-weight: 600;
   font-size: 14px;
@@ -83,7 +83,7 @@ h2 {
 }
 
 .btn-filtrar:hover:not(:disabled) {
-  background: #6d08b0;
+  background: var(--cf-primary-hover);
 }
 
 .btn-filtrar:disabled {
@@ -125,8 +125,8 @@ h2 {
 
 .summary-item {
   flex: 1;
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 12px;
   padding: 16px;
   display: flex;
@@ -136,7 +136,7 @@ h2 {
 
 .summary-label {
   font-size: 12px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -144,16 +144,16 @@ h2 {
 .summary-value {
   font-size: 18px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .summary-value.destaque {
-  color: #c084fc;
+  color: var(--cf-accent);
 }
 
 .transaction-list {
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 16px;
   overflow: hidden;
 }
@@ -167,7 +167,7 @@ h2 {
 }
 
 .tx-item + .tx-item {
-  border-top: 1px solid #29282f;
+  border-top: 1px solid var(--cf-border);
 }
 
 .tx-item:hover {
@@ -202,12 +202,12 @@ h2 {
 .tx-type {
   font-size: 14px;
   font-weight: 500;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .tx-note {
   font-size: 12px;
-  color: #505059;
+  color: var(--cf-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -215,7 +215,7 @@ h2 {
 
 .tx-date {
   font-size: 11px;
-  color: #505059;
+  color: var(--cf-text-muted);
 }
 
 .tx-value {
@@ -235,9 +235,9 @@ h2 {
   padding: 12px;
   margin-top: 8px;
   border-radius: 12px;
-  background: #15141a;
-  border: 1px solid #29282f;
-  color: #c084fc;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
+  color: var(--cf-accent);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -246,8 +246,8 @@ h2 {
 }
 
 .btn-ver-mais:hover {
-  background: rgba(130, 10, 209, 0.08);
-  border-color: #820ad1;
+  background: var(--cf-primary-light2);
+  border-color: var(--cf-primary);
 }
 
 .empty-state {
@@ -256,7 +256,7 @@ h2 {
 }
 
 .empty-state p {
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   font-size: 14px;
   margin: 0;
 }
@@ -269,7 +269,7 @@ h2 {
 
 .skeleton-row {
   height: 56px;
-  background: linear-gradient(90deg, #1e1d25 25%, #29282f 50%, #1e1d25 75%);
+  background: linear-gradient(90deg, var(--cf-bg-elevated) 25%, var(--cf-border) 50%, var(--cf-bg-elevated) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 12px;

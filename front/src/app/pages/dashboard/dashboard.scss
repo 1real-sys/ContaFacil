@@ -19,17 +19,17 @@
   font-size: 24px;
   font-weight: 700;
   margin: 0 0 4px;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .dashboard-header p {
   font-size: 14px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   margin: 0;
 }
 
 .balance-card {
-  background: linear-gradient(135deg, #820ad1, #4c1d95);
+  background: linear-gradient(135deg, var(--cf-primary), var(--cf-primary-gradient-end));
   border-radius: 20px;
   padding: 32px;
   margin-bottom: 28px;
@@ -130,7 +130,7 @@
 }
 
 .action-btn:hover:not(:disabled) {
-  background: rgba(130, 10, 209, 0.08);
+  background: var(--cf-primary-light2);
 }
 
 .action-btn:disabled {
@@ -141,7 +141,7 @@
 .action-btn span {
   font-size: 12px;
   font-weight: 500;
-  color: #a8a8b3;
+  color: var(--cf-text-tertiary);
 }
 
 .action-circle {
@@ -159,8 +159,8 @@
 }
 
 .action-deposit { background: rgba(4, 211, 97, 0.12); color: #04d361; }
-.action-transfer { background: rgba(130, 10, 209, 0.12); color: #c084fc; }
-.action-cards { background: rgba(130, 10, 209, 0.12); color: #c084fc; }
+.action-transfer { background: var(--cf-primary-light); color: var(--cf-accent); }
+.action-cards { background: var(--cf-primary-light); color: var(--cf-accent); }
 .action-bill { background: rgba(249, 115, 22, 0.12); color: #fb923c; }
 .action-statement { background: rgba(59, 130, 246, 0.12); color: #60a5fa; }
 
@@ -186,18 +186,18 @@
 }
 
 .credit-card.visa {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  border: 1px solid #29282f;
+  background: linear-gradient(135deg, var(--cf-card-visa-start), var(--cf-card-visa-end));
+  border: 1px solid var(--cf-border);
 }
 
 .credit-card.mastercard {
-  background: linear-gradient(135deg, #212121, #303030);
-  border: 1px solid #29282f;
+  background: linear-gradient(135deg, var(--cf-card-mc-start), var(--cf-card-mc-end));
+  border: 1px solid var(--cf-border);
 }
 
 .credit-card.placeholder-card {
-  background: #15141a;
-  border: 1.5px dashed #29282f;
+  background: var(--cf-bg-surface);
+  border: 1.5px dashed var(--cf-border);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -213,14 +213,14 @@
 .cc-bank {
   font-size: 16px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   letter-spacing: 1px;
 }
 
 .cc-brand {
   font-size: 18px;
   font-weight: 700;
-  color: #a8a8b3;
+  color: var(--cf-text-tertiary);
   letter-spacing: 2px;
 }
 
@@ -245,7 +245,7 @@
 .cc-number {
   font-size: 20px;
   font-weight: 600;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   letter-spacing: 3px;
   margin-bottom: 20px;
   font-family: 'Courier New', monospace;
@@ -269,7 +269,7 @@
 
 .cc-limit-label {
   font-size: 11px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -277,16 +277,16 @@
 .cc-limit-value {
   font-size: 15px;
   font-weight: 600;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .cc-limit-value.secondary {
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   font-weight: 500;
 }
 
 .cc-empty {
-  color: #505059;
+  color: var(--cf-text-muted);
   font-size: 14px;
   margin: 12px 0;
 }
@@ -294,7 +294,7 @@
 .btn-solicitar {
   padding: 10px 22px;
   border-radius: 10px;
-  background: #820ad1;
+  background: var(--cf-primary);
   color: white;
   border: none;
   cursor: pointer;
@@ -306,13 +306,13 @@
 }
 
 .btn-solicitar:hover {
-  background: #6d08b0;
+  background: var(--cf-primary-hover);
   transform: translateY(-1px);
 }
 
 .fatura-card {
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 16px;
   padding: 24px;
   box-sizing: border-box;
@@ -331,7 +331,7 @@
 .fatura-header-row h4 {
   font-size: 16px;
   font-weight: 600;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0;
 }
 
@@ -352,7 +352,7 @@
 .fatura-valor {
   font-size: 28px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin-bottom: 10px;
 }
 
@@ -361,7 +361,7 @@
   flex-wrap: wrap;
   gap: 8px;
   font-size: 13px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   min-width: 0;
 }
 
@@ -378,7 +378,7 @@
   font-size: 18px;
   font-weight: 600;
   margin: 0 0 16px;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .transaction-list {
@@ -422,8 +422,8 @@
 }
 
 .tx-icon.ted {
-  background: rgba(130, 10, 209, 0.12);
-  color: #c084fc;
+  background: var(--cf-primary-light);
+  color: var(--cf-accent);
 }
 
 .tx-icon.pagamento_fatura_cartao {
@@ -442,12 +442,12 @@
 .tx-label {
   font-size: 15px;
   font-weight: 500;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .tx-note {
   font-size: 12px;
-  color: #505059;
+  color: var(--cf-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -472,13 +472,13 @@
 
 .tx-date {
   font-size: 12px;
-  color: #505059;
+  color: var(--cf-text-muted);
 }
 
 .empty-state {
   padding: 24px;
   text-align: center;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
 }
 
 .empty-state p {
@@ -507,7 +507,7 @@
   padding: 12px 28px;
   border-radius: 10px;
   background: white;
-  color: #820ad1;
+  color: var(--cf-primary);
   font-weight: 700;
   font-size: 14px;
   border: none;
@@ -533,7 +533,7 @@
   width: 16px;
   height: 16px;
   border: 2px solid rgba(130, 10, 209, 0.3);
-  border-top-color: #820ad1;
+  border-top-color: var(--cf-primary);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -545,7 +545,7 @@
 .btn-small {
   padding: 8px 16px;
   border-radius: 8px;
-  background: #820ad1;
+  background: var(--cf-primary);
   color: white;
   border: none;
   cursor: pointer;
@@ -556,11 +556,11 @@
 }
 
 .btn-small:hover {
-  background: #6d08b0;
+  background: var(--cf-primary-hover);
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #1e1d25 25%, #29282f 50%, #1e1d25 75%);
+  background: linear-gradient(90deg, var(--cf-bg-elevated) 25%, var(--cf-border) 50%, var(--cf-bg-elevated) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   border-radius: 12px;

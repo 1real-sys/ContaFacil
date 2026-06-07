@@ -53,6 +53,23 @@
       </a>
     </nav>
 
+    <div class="sidebar-theme">
+      @if (!collapsed()) {
+        <span class="theme-label">Alterar tema</span>
+      }
+      <div class="theme-picker">
+        @for (t of themes; track t) {
+          <button
+            class="theme-dot"
+            [class]="t"
+            [class.active]="theme() === t"
+            (click)="setTheme(t)"
+            [attr.aria-label]="'Tema ' + t"
+          ></button>
+        }
+      </div>
+    </div>
+
     <div class="sidebar-footer">
       <div class="user-info">
         <div class="avatar">{{ userName().charAt(0).toUpperCase() }}</div>

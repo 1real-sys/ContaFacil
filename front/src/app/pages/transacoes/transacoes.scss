@@ -12,15 +12,15 @@
 h2 {
   font-size: 22px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 20px;
 }
 
 .tabs {
   display: flex;
   gap: 4px;
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 14px;
   padding: 4px;
   margin-bottom: 24px;
@@ -36,7 +36,7 @@ h2 {
   border: none;
   border-radius: 10px;
   background: transparent;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -45,11 +45,11 @@ h2 {
 }
 
 .tab-btn:hover {
-  color: #c084fc;
+  color: var(--cf-accent);
 }
 
 .tab-btn.active {
-  background: #820ad1;
+  background: var(--cf-primary);
   color: white;
 }
 
@@ -58,8 +58,8 @@ h2 {
 }
 
 .tab-content {
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 16px;
   padding: 28px;
 }
@@ -92,20 +92,20 @@ h2 {
 .form-group label {
   font-size: 14px;
   font-weight: 500;
-  color: #a8a8b3;
+  color: var(--cf-text-tertiary);
 }
 
 .optional {
   font-weight: 400;
-  color: #505059;
+  color: var(--cf-text-muted);
 }
 
 .form-group input {
   padding: 14px 16px;
   border-radius: 10px;
-  border: 1.5px solid #29282f;
-  background: #1e1d25;
-  color: #e1e1e6;
+  border: 1.5px solid var(--cf-border);
+  background: var(--cf-bg-elevated);
+  color: var(--cf-text-primary);
   font-size: 15px;
   transition: border-color 0.2s;
   outline: none;
@@ -113,11 +113,11 @@ h2 {
 }
 
 .form-group input:focus {
-  border-color: #820ad1;
+  border-color: var(--cf-primary);
 }
 
 .form-group input::placeholder {
-  color: #505059;
+  color: var(--cf-text-muted);
 }
 
 .input-prefix {
@@ -129,7 +129,7 @@ h2 {
 .prefix {
   position: absolute;
   left: 16px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   font-size: 15px;
   font-weight: 500;
   pointer-events: none;
@@ -144,7 +144,7 @@ h2 {
 .btn-submit {
   padding: 14px;
   border-radius: 10px;
-  background: #820ad1;
+  background: var(--cf-primary);
   color: white;
   font-weight: 600;
   font-size: 16px;
@@ -160,7 +160,7 @@ h2 {
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: #6d08b0;
+  background: var(--cf-primary-hover);
   transform: translateY(-1px);
 }
 
@@ -187,18 +187,18 @@ h2 {
 .receipt-card h3 {
   font-size: 20px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 4px;
 }
 
 .receipt-desc {
   font-size: 14px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   margin: 0 0 24px;
 }
 
 .receipt-details {
-  background: #1e1d25;
+  background: var(--cf-bg-elevated);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 24px;
@@ -210,15 +210,15 @@ h2 {
   align-items: center;
   padding: 10px 0;
   font-size: 15px;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .receipt-row + .receipt-row {
-  border-top: 1px solid #29282f;
+  border-top: 1px solid var(--cf-border);
 }
 
 .receipt-label {
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   font-size: 14px;
 }
 
@@ -233,7 +233,7 @@ h2 {
 
 .receipt-obs {
   font-size: 14px;
-  color: #a8a8b3;
+  color: var(--cf-text-tertiary);
   max-width: 200px;
   text-align: right;
   word-break: break-word;
@@ -247,15 +247,15 @@ h2 {
 .receipt-saldo {
   font-size: 18px;
   font-weight: 700;
-  color: #c084fc;
+  color: var(--cf-accent);
 }
 
 .btn-new {
   padding: 12px 28px;
   border-radius: 10px;
   background: transparent;
-  border: 1.5px solid #29282f;
-  color: #e1e1e6;
+  border: 1.5px solid var(--cf-border);
+  color: var(--cf-text-primary);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -264,8 +264,8 @@ h2 {
 }
 
 .btn-new:hover {
-  border-color: #820ad1;
-  color: #c084fc;
+  border-color: var(--cf-primary);
+  color: var(--cf-accent);
 }
 
 @media (max-width: 768px) {

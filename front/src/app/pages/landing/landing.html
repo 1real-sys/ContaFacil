@@ -5,6 +5,17 @@
       <span class="brand-text">ContaFacil</span>
     </div>
     <div class="nav-actions">
+      <div class="theme-picker">
+        @for (t of themes; track t) {
+          <button
+            class="theme-dot"
+            [class]="t"
+            [class.active]="theme() === t"
+            (click)="setTheme(t)"
+            [attr.aria-label]="'Tema ' + t"
+          ></button>
+        }
+      </div>
       <a routerLink="/login" class="btn-outline">Entrar</a>
       <a routerLink="/register" class="btn-primary">Criar conta</a>
     </div>

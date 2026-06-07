@@ -12,7 +12,7 @@
 h2 {
   font-size: 22px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 20px;
 }
 
@@ -35,8 +35,8 @@ h2 {
 }
 
 .no-card {
-  background: #15141a;
-  border: 1.5px dashed #29282f;
+  background: var(--cf-bg-surface);
+  border: 1.5px dashed var(--cf-border);
   border-radius: 20px;
   padding: 48px 24px;
   text-align: center;
@@ -47,7 +47,7 @@ h2 {
   height: 72px;
   border-radius: 50%;
   background: rgba(130, 10, 209, 0.1);
-  color: #c084fc;
+  color: var(--cf-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -57,14 +57,14 @@ h2 {
 .no-card h3 {
   font-size: 17px;
   font-weight: 600;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 20px;
 }
 
 .emitir-form {
   margin-top: 20px;
   padding: 24px;
-  background: #1e1d25;
+  background: var(--cf-bg-elevated);
   border-radius: 14px;
   text-align: left;
 }
@@ -79,7 +79,7 @@ h2 {
 .btn-primary {
   padding: 12px 24px;
   border-radius: 10px;
-  background: #820ad1;
+  background: var(--cf-primary);
   color: white;
   font-weight: 600;
   font-size: 14px;
@@ -93,7 +93,7 @@ h2 {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #6d08b0;
+  background: var(--cf-primary-hover);
 }
 
 .btn-primary:disabled {
@@ -104,9 +104,9 @@ h2 {
 .btn-outline {
   padding: 12px 20px;
   border-radius: 10px;
-  border: 1.5px solid #29282f;
+  border: 1.5px solid var(--cf-border);
   background: transparent;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -118,8 +118,8 @@ h2 {
 }
 
 .btn-outline:hover {
-  border-color: #820ad1;
-  color: #c084fc;
+  border-color: var(--cf-primary);
+  color: var(--cf-accent);
 }
 
 .btn-danger {
@@ -179,16 +179,16 @@ h2 {
 .form-group label {
   font-size: 14px;
   font-weight: 500;
-  color: #a8a8b3;
+  color: var(--cf-text-tertiary);
 }
 
 .form-group input,
 .form-group select {
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1.5px solid #29282f;
-  background: #1e1d25;
-  color: #e1e1e6;
+  border: 1.5px solid var(--cf-border);
+  background: var(--cf-bg-elevated);
+  color: var(--cf-text-primary);
   font-size: 14px;
   transition: border-color 0.2s;
   outline: none;
@@ -197,11 +197,11 @@ h2 {
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #820ad1;
+  border-color: var(--cf-primary);
 }
 
 .form-group input::placeholder {
-  color: #505059;
+  color: var(--cf-text-muted);
 }
 
 .input-prefix {
@@ -213,7 +213,7 @@ h2 {
 .input-prefix .prefix {
   position: absolute;
   left: 14px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   font-weight: 500;
   pointer-events: none;
   z-index: 1;
@@ -233,13 +233,13 @@ h2 {
 }
 
 .credit-card.visa {
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  border: 1px solid #29282f;
+  background: linear-gradient(135deg, var(--cf-card-visa-start), var(--cf-card-visa-end));
+  border: 1px solid var(--cf-border);
 }
 
 .credit-card.mastercard {
-  background: linear-gradient(135deg, #212121, #303030);
-  border: 1px solid #29282f;
+  background: linear-gradient(135deg, var(--cf-card-mc-start), var(--cf-card-mc-end));
+  border: 1px solid var(--cf-border);
 }
 
 .cc-header {
@@ -252,14 +252,14 @@ h2 {
 .cc-bank {
   font-size: 15px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   letter-spacing: 1px;
 }
 
 .cc-brand {
   font-size: 17px;
   font-weight: 700;
-  color: #a8a8b3;
+  color: var(--cf-text-tertiary);
   letter-spacing: 2px;
 }
 
@@ -284,7 +284,7 @@ h2 {
 .cc-number {
   font-size: 19px;
   font-weight: 600;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   letter-spacing: 3px;
   margin-bottom: 16px;
   font-family: 'Courier New', monospace;
@@ -305,14 +305,14 @@ h2 {
 
 .cc-info-label {
   font-size: 11px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   text-transform: uppercase;
 }
 
 .cc-info-value {
   font-size: 14px;
   font-weight: 500;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .cc-status-badge {
@@ -340,7 +340,7 @@ h2 {
 
 .cc-limit-label {
   font-size: 11px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -348,11 +348,11 @@ h2 {
 .cc-limit-value {
   font-size: 15px;
   font-weight: 600;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .cc-limit-value.destaque {
-  color: #c084fc;
+  color: var(--cf-accent);
 }
 
 .card-actions {
@@ -368,9 +368,9 @@ h2 {
   gap: 8px;
   padding: 10px 16px;
   border-radius: 10px;
-  border: 1.5px solid #29282f;
-  background: #15141a;
-  color: #e1e1e6;
+  border: 1.5px solid var(--cf-border);
+  background: var(--cf-bg-surface);
+  color: var(--cf-text-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -379,8 +379,8 @@ h2 {
 }
 
 .act-btn:hover:not(:disabled) {
-  border-color: #820ad1;
-  color: #c084fc;
+  border-color: var(--cf-primary);
+  color: var(--cf-accent);
 }
 
 .act-btn:disabled {
@@ -394,8 +394,8 @@ h2 {
 
 .confirm-overlay {
   padding: 20px;
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 16px;
   margin-bottom: 20px;
   text-align: center;
@@ -403,7 +403,7 @@ h2 {
 
 .confirm-card p {
   font-size: 15px;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 16px;
 }
 
@@ -421,7 +421,7 @@ h2 {
   width: 100%;
   padding: 14px;
   border-radius: 12px;
-  background: linear-gradient(135deg, #820ad1, #4c1d95);
+  background: linear-gradient(135deg, var(--cf-primary), var(--cf-primary-gradient-end));
   color: white;
   font-weight: 600;
   font-size: 16px;
@@ -441,8 +441,8 @@ h2 {
 }
 
 .compra-form-card {
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 16px;
   padding: 24px;
 }
@@ -450,7 +450,7 @@ h2 {
 .compra-form-card h3 {
   font-size: 17px;
   font-weight: 600;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 16px;
 }
 
@@ -472,8 +472,8 @@ h2 {
 }
 
 .compra-receipt {
-  background: #15141a;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border);
   border-radius: 16px;
   padding: 32px;
   text-align: center;
@@ -493,7 +493,7 @@ h2 {
 .compra-receipt h4 {
   font-size: 18px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0 0 20px;
 }
 
@@ -507,15 +507,15 @@ h2 {
   align-items: center;
   padding: 10px 0;
   font-size: 14px;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .rec-row + .rec-row {
-  border-top: 1px solid #29282f;
+  border-top: 1px solid var(--cf-border);
 }
 
 .rec-row span:first-child {
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
 }
 
 .rec-row .neg {
@@ -526,7 +526,7 @@ h2 {
 .skeleton-card {
   height: 210px;
   border-radius: 18px;
-  background: linear-gradient(90deg, #1e1d25 25%, #29282f 50%, #1e1d25 75%);
+  background: linear-gradient(90deg, var(--cf-bg-elevated) 25%, var(--cf-border) 50%, var(--cf-bg-elevated) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -576,8 +576,8 @@ h2 {
 }
 
 .modal-dados {
-  background: #1e1d25;
-  border: 1px solid #29282f;
+  background: var(--cf-bg-elevated);
+  border: 1px solid var(--cf-border);
   border-radius: 20px;
   padding: 28px;
   width: 100%;
@@ -594,7 +594,7 @@ h2 {
 .modal-dados-header h4 {
   font-size: 17px;
   font-weight: 700;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
   margin: 0;
   flex: 1;
 }
@@ -609,7 +609,7 @@ h2 {
 .modal-close {
   background: none;
   border: none;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -619,13 +619,13 @@ h2 {
 }
 
 .modal-close:hover {
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .modal-skeleton {
   height: 120px;
   border-radius: 12px;
-  background: linear-gradient(90deg, #1e1d25 25%, #29282f 50%, #1e1d25 75%);
+  background: linear-gradient(90deg, var(--cf-bg-elevated) 25%, var(--cf-border) 50%, var(--cf-bg-elevated) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -649,18 +649,18 @@ h2 {
 }
 
 .dados-row + .dados-row {
-  border-top: 1px solid #29282f;
+  border-top: 1px solid var(--cf-border);
 }
 
 .dados-label {
   font-size: 13px;
-  color: #8a8a94;
+  color: var(--cf-text-secondary);
 }
 
 .dados-value {
   font-size: 15px;
   font-weight: 500;
-  color: #e1e1e6;
+  color: var(--cf-text-primary);
 }
 
 .dados-value.numero {

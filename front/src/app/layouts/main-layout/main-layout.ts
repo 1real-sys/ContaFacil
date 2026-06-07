@@ -3,6 +3,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { StorageService } from '../../core/services/storage.service';
 import { Router } from '@angular/router';
+import { ThemeService, Theme } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -16,11 +17,18 @@ export class MainLayout {
   private readonly authService = inject(AuthService);
   private readonly storage = inject(StorageService);
   private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
 
   collapsed = signal(false);
   mobileOpen = signal(false);
 
   userName = computed(() => this.storage.getUserName() || 'Usuário');
+  readonly theme = this.themeService.theme;
+  readonly themes: Theme[] = ['purple', 'orange', 'green'];
+
+  setTheme(t: Theme): void {
+    this.themeService.setTheme(t);
+  }
 
   toggleSidebar(): void {
     this.collapsed.update((v) => !v);
