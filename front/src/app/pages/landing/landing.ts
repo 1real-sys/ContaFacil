@@ -14,7 +14,7 @@ export class Landing {
   private readonly themeService = inject(ThemeService);
 
   readonly theme = this.themeService.theme;
-  readonly themes: Theme[] = ['purple', 'orange', 'green'];
+  readonly themes: Theme[] = ['purple', 'orange', 'green', 'red'];
 
   setTheme(t: Theme): void {
     this.themeService.setTheme(t);

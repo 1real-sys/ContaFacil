@@ -73,6 +73,10 @@
   background: #21c25e;
 }
 
+.theme-dot.red {
+  background: #ec0000;
+}
+
 .theme-dot.active {
   border-color: var(--cf-text-primary);
   transform: scale(1.15);
