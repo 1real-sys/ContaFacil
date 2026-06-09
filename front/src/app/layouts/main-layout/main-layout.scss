@@ -216,6 +216,13 @@
   gap: 12px;
   padding: 8px 10px;
   margin-bottom: 4px;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: background 0.2s;
+}
+
+.user-info:hover {
+  background: var(--cf-primary-light);
 }
 
 .avatar {

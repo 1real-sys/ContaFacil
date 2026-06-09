@@ -48,6 +48,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/faturas/faturas').then((m) => m.Faturas),
       },
+      {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./pages/perfil/perfil').then((m) => m.Perfil),
+      },
     ],
   },
   {

@@ -71,7 +71,7 @@
     </div>
 
     <div class="sidebar-footer">
-      <div class="user-info">
+      <div class="user-info" routerLink="/perfil" role="button" tabindex="0" (click)="closeMobile()">
         <div class="avatar">{{ userName().charAt(0).toUpperCase() }}</div>
         @if (!collapsed()) {
           <span class="username">{{ userName() }}</span>
