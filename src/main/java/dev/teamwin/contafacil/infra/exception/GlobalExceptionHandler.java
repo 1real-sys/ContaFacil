@@ -1,5 +1,6 @@
 package dev.teamwin.contafacil.infra.exception;
 
+import jakarta.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,5 +24,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleGenericException(Exception e) {
         log.error("Erro interno inesperado", e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno do servidor");
+    }
+    @ExceptionHandler(OptimisticLockException.class)
+    public ResponseEntity<String> handleOptimisticLock(OptimisticLockException e) {
+        log.warn("Conflito de concorrência detectado: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Operação não concluída devido a conflito. Tente novamente.");
     }
 }
