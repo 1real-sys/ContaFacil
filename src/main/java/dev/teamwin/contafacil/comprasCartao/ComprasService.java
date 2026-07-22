@@ -80,11 +80,16 @@ public class ComprasService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Compra já está cancelada");
         }
 
+        FaturaDomain fatura = compra.getFatura();
+        if (fatura.getStatus() != StatusFatura.ABERTA){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Cancelamento disponível apenas para faturas em aberto. Use estorno para faturas pagas.");
+        }
+
         CartaoDomain cartao = compra.getFatura().getCartao();
         cartao.setLimiteUtilizado(cartao.getLimiteUtilizado().subtract(compra.getValor()));
         cartaoRepository.save(cartao);
 
-        FaturaDomain fatura = compra.getFatura();
         fatura.setValorTotal(fatura.getValorTotal().subtract(compra.getValor()));
         faturaRepository.save(fatura);
 
