@@ -2,7 +2,6 @@ package dev.teamwin.contafacil.transacao;
 
 
 import dev.teamwin.contafacil.conta.ContaDomain;
-import dev.teamwin.contafacil.service.AuthService;
 import dev.teamwin.contafacil.user.UserDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
 import lombok.AllArgsConstructor;
@@ -51,7 +50,7 @@ public class TransacaoService {
     }
 
     @Transactional
-    public TransacaoResponseDTO Ted(TedRequestDTO dto){
+    public TransacaoResponseDTO ted(TedRequestDTO dto){
         UserDomain user = (UserDomain) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();

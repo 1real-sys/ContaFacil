@@ -27,7 +27,7 @@ public class TransacaoController {
 
     @PostMapping("/ted")
     public ResponseEntity<TransacaoResponseDTO> ted(@Valid @RequestBody TedRequestDTO dto) {
-        return ResponseEntity.ok(transacaoService.Ted(dto));
+        return ResponseEntity.ok(transacaoService.ted(dto));
     }
 
     @PostMapping("/saque")

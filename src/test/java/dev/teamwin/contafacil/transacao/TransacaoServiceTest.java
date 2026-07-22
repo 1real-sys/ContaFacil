@@ -126,7 +126,7 @@ class TransacaoServiceTest extends BaseIntegrationTest {
                 new BigDecimal("300"), null, destino.getContaCorrente()
         );
 
-        transacaoService.Ted(dto);
+        transacaoService.ted(dto);
 
         ContaDomain origemAtual = contaRepository
                 .findByUserId(usuario.getId()).get(0);
@@ -156,7 +156,7 @@ class TransacaoServiceTest extends BaseIntegrationTest {
                 new BigDecimal("999999"), null, destino.getContaCorrente()
         );
 
-        assertThatThrownBy(() -> transacaoService.Ted(dto))
+        assertThatThrownBy(() -> transacaoService.ted(dto))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("Saldo insuficiente");
 
@@ -171,7 +171,7 @@ class TransacaoServiceTest extends BaseIntegrationTest {
                 new BigDecimal("300"), null, conta.getContaCorrente()
         );
 
-        assertThatThrownBy(() -> transacaoService.Ted(dto))
+        assertThatThrownBy(() -> transacaoService.ted(dto))
                 .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("Não é possível transferir para a própria conta");
     }
