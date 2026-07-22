@@ -64,6 +64,7 @@ public class ContaService {
     }
 
 
+    @Transactional(readOnly = true)
     public ContaResponseDTO minhaConta(){
         UserDomain user = (UserDomain) SecurityContextHolder.getContext().
                 getAuthentication()

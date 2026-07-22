@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface FaturaRepository extends JpaRepository<FaturaDomain, Long> {
 
     @Cacheable(value = "faturas", key = "#cartaoId + '-' + #ano + '-' + #mes",
-               unless = "#result.empty")
+               unless = "#result == null || !#result.present")
     @EntityGraph(attributePaths = "compras")
     Optional<FaturaDomain> findByCartaoIdAndAnoAndMes(Long cartaoId, Integer ano, Integer mes);
 

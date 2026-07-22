@@ -9,9 +9,7 @@ import java.math.BigDecimal;
 public class ContaMapper {
 
     public ContaResponseDTO toResponse(ContaDomain conta) {
-        String nome = conta.getUser() != null ? conta.getUser().getUsername() : null;
-        Long idUsuario = conta.getUser() != null ? conta.getUser().getId() : null;
-        return new ContaResponseDTO( conta.getContaCorrente(),
+        return new ContaResponseDTO(conta.getContaCorrente(),
                 conta.getAgencia(),
                 conta.getSaldo());
     }
