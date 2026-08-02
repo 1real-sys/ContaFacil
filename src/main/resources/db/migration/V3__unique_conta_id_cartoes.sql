@@ -1,0 +1,1 @@
+ALTER TABLE cartoes ADD CONSTRAINT uk_cartoes_conta_id UNIQUE (conta_id);

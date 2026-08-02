@@ -1,0 +1,1 @@
+ALTER TABLE cartoes DROP INDEX uk_cartoes_conta_id;

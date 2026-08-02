@@ -1,8 +1,14 @@
 package dev.teamwin.contafacil.cartao;
 
 import dev.teamwin.contafacil.BaseIntegrationTest;
+import dev.teamwin.contafacil.comprasCartao.ComprasCartaoRepository;
+import dev.teamwin.contafacil.comprasCartao.ComprasService;
+import dev.teamwin.contafacil.comprasCartao.CompraCartaoRequestDTO;
+import dev.teamwin.contafacil.comprasCartao.CategoriaEstabelecimento;
 import dev.teamwin.contafacil.conta.ContaDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
+import dev.teamwin.contafacil.fatura.FaturaService;
+import dev.teamwin.contafacil.fatura.PagamentoFaturaRequestDTO;
 import dev.teamwin.contafacil.user.UserDomain;
 import dev.teamwin.contafacil.user.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -12,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -31,6 +38,15 @@ class CartaoServiceTest extends BaseIntegrationTest {
 
     @Autowired
     private CartaoRepository cartaoRepository;
+
+    @Autowired
+    private ComprasService comprasService;
+
+    @Autowired
+    private FaturaService faturaService;
+
+    @Autowired
+    private ComprasCartaoRepository comprasCartaoRepository;
 
     private UserDomain usuario;
     private ContaDomain conta;
@@ -123,5 +139,38 @@ class CartaoServiceTest extends BaseIntegrationTest {
 
         var cartaoSalvo = cartaoRepository.findById(cartaoResponse.id()).get();
         assertThat(cartaoSalvo.getStatus()).isEqualTo(StatusCartao.CANCELADO);
+    }
+
+    @Test
+    void solicitarLimiteComSucesso(){
+        var dto = new CartaoCreateDTO(BandeiraCartao.VISA);
+        var cartaoResponse = cartaoService.emitirCartao(dto);
+
+        cartaoService.ativarCartao(cartaoResponse.id());
+
+        var response = cartaoService.solicitarLimite(cartaoResponse.id());
+
+        assertThat(response.limiteTotal()).isGreaterThanOrEqualTo(new BigDecimal("1000"));
+    }
+
+    // ──── C1: cancelarCompra em fatura PAGA deve lançar exceção ────
+    @Test
+    void cancelarCompra_emFaturaPaga_deveLancarExcecao() {
+        var dto = new CartaoCreateDTO(BandeiraCartao.VISA);
+        var cartaoResponse = cartaoService.emitirCartao(dto);
+        cartaoService.ativarCartao(cartaoResponse.id());
+        cartaoService.solicitarLimite(cartaoResponse.id());
+
+        var compraDto = new CompraCartaoRequestDTO(
+                new BigDecimal("500"), "Teste", CategoriaEstabelecimento.SHOPPING
+        );
+        var compraResponse = comprasService.lancarCompra(cartaoResponse.id(), compraDto);
+
+        var pagamentoDto = new PagamentoFaturaRequestDTO(new BigDecimal("500"));
+        faturaService.pagarFatura(compraResponse.faturaId(), pagamentoDto);
+
+        assertThatThrownBy(() -> comprasService.cancelarCompra(compraResponse.id()))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("Cancelamento disponível apenas para faturas em aberto");
     }
 }

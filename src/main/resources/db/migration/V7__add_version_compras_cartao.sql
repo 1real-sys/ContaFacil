@@ -1,0 +1,1 @@
+ALTER TABLE compras_cartao ADD COLUMN version BIGINT DEFAULT 0 NOT NULL;
