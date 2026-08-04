@@ -203,10 +203,6 @@ export class Cartoes implements OnInit, OnDestroy {
     });
   }
 
-  formatCardNumber(numero: string): string {
-    return numero.replace(/(.{4})/g, '$1 ').trim();
-  }
-
   verDados(): void {
     const c = this.cartaoPrincipal();
     if (!c) return;

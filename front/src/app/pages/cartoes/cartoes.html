@@ -175,11 +175,7 @@
               <div class="modal-dados-body">
                 <div class="dados-row">
                   <span class="dados-label">Número</span>
-                  <span class="dados-value numero">{{ formatCardNumber(dadosSensiveis()!.numeroCartao) }}</span>
-                </div>
-                <div class="dados-row">
-                  <span class="dados-label">CVV</span>
-                  <span class="dados-value cvv">{{ dadosSensiveis()!.cvv }}</span>
+                  <span class="dados-value numero">{{ dadosSensiveis()!.numeroCartaoOculto }}</span>
                 </div>
                 <div class="dados-row">
                   <span class="dados-label">Validade</span>

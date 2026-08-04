@@ -1,5 +1,4 @@
 export interface CartaoDadosSensiveis {
-  numeroCartao: string;
-  cvv: string;
+  numeroCartaoOculto: string;
   dataValidade: string;
 }
