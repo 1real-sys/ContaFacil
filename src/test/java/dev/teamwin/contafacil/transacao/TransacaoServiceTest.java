@@ -3,6 +3,7 @@ package dev.teamwin.contafacil.transacao;
 import dev.teamwin.contafacil.BaseIntegrationTest;
 import dev.teamwin.contafacil.conta.ContaDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import dev.teamwin.contafacil.user.UserDomain;
 import dev.teamwin.contafacil.user.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -61,7 +62,9 @@ class TransacaoServiceTest extends BaseIntegrationTest {
                 new SimpleGrantedAuthority("ROLE_USER")
         );
         var authentication = new UsernamePasswordAuthenticationToken(
-                user, null, authorities
+                new AuthenticatedUser(user.getId(), user.getEmail(), user.getUsername()),
+                null,
+                authorities
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

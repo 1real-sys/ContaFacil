@@ -3,6 +3,7 @@ package dev.teamwin.contafacil.cartao;
 import dev.teamwin.contafacil.BaseIntegrationTest;
 import dev.teamwin.contafacil.comprasCartao.ComprasCartaoRepository;
 import dev.teamwin.contafacil.comprasCartao.ComprasService;
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import dev.teamwin.contafacil.comprasCartao.CompraCartaoRequestDTO;
 import dev.teamwin.contafacil.comprasCartao.CategoriaEstabelecimento;
 import dev.teamwin.contafacil.conta.ContaDomain;
@@ -79,7 +80,9 @@ class CartaoServiceTest extends BaseIntegrationTest {
                 new SimpleGrantedAuthority("ROLE_USER")
         );
         var authentication = new UsernamePasswordAuthenticationToken(
-                user, null, authorities
+                new AuthenticatedUser(user.getId(), user.getEmail(), user.getUsername()),
+                null,
+                authorities
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
