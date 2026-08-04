@@ -24,8 +24,7 @@ public class CartaoMapper {
 
     public CartaoDadosSensiveisDTO toDadosSensiveis(CartaoDomain cartao) {
         return new CartaoDadosSensiveisDTO(
-                cartao.getNumeroCartao(),
-                cartao.getCvv(),
+                mascararNumero(cartao.getNumeroCartao()),
                 cartao.getDataValidade()
         );
     }
@@ -34,7 +33,6 @@ public class CartaoMapper {
             CartaoCreateDTO dto,
             ContaDomain conta,
             String numeroCartao,
-            String cvv,
             LocalDateTime dataValidade,
             StatusCartao status
 
@@ -42,7 +40,6 @@ public class CartaoMapper {
         CartaoDomain cartao = new CartaoDomain();
         cartao.setConta(conta);
         cartao.setNumeroCartao(numeroCartao);
-        cartao.setCvv(cvv);
         cartao.setDataValidade(dataValidade);
         cartao.setStatus(status);
         cartao.setBandeira(dto.bandeira());

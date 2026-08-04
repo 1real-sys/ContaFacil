@@ -2,8 +2,8 @@ package dev.teamwin.contafacil.transacao;
 
 
 import dev.teamwin.contafacil.conta.ContaDomain;
-import dev.teamwin.contafacil.user.UserDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +28,11 @@ public class TransacaoService {
 
     @Transactional
     public TransacaoResponseDTO depositar(DepositoRequestDTO dto) {
-        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
+        AuthenticatedUser principal = (AuthenticatedUser) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
 
-        ContaDomain conta = contaRepository.findByUserId(user.getId())
+        ContaDomain conta = contaRepository.findByUserId(principal.getId())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
@@ -42,7 +42,7 @@ public class TransacaoService {
 
         conta.setSaldo(saldoDepois);
         contaRepository.save(conta);
-        log.info("Depósito realizado com sucesso para o usuário: {}, valor: {}", user.getEmail(), dto.valor());
+        log.info("Depósito realizado com sucesso para o usuário: {}, valor: {}", principal.getEmail(), dto.valor());
 
         TransacaoDomain transacao = transacaoMapper.fromDepositoRequest(dto, conta, saldoAntes, saldoDepois);
         transacao = transacaoRepository.save(transacao);
@@ -51,11 +51,11 @@ public class TransacaoService {
 
     @Transactional
     public TransacaoResponseDTO ted(TedRequestDTO dto){
-        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
+        AuthenticatedUser principal = (AuthenticatedUser) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
 
-        ContaDomain contaOrigem = contaRepository.findByUserId(user.getId())
+        ContaDomain contaOrigem = contaRepository.findByUserId(principal.getId())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
@@ -89,18 +89,18 @@ public class TransacaoService {
         TransacaoDomain transacaoOrigem = transacaoMapper.fromTedRequest(
                 dto, contaOrigem, contaDestino, saldoAntesOrigem, saldoDepoisOrigem);
         transacaoRepository.save(transacaoOrigem);
-        log.info("O usuário: {} realizou uma transferência TED para a conta: {}, valor: {}", user.getEmail(), dto.contaDestino(), dto.valor());
+        log.info("O usuário: {} realizou uma transferência TED para a conta: {}, valor: {}", principal.getEmail(), dto.contaDestino(), dto.valor());
 
         return transacaoMapper.toResponse(transacaoOrigem);
     }
 
     @Transactional
     public TransacaoResponseDTO Saque(SaqueRequestDTO dto){
-        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
+        AuthenticatedUser principal = (AuthenticatedUser) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
 
-        ContaDomain contaOrigem = contaRepository.findByUserId(user.getId())
+        ContaDomain contaOrigem = contaRepository.findByUserId(principal.getId())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
@@ -115,7 +115,7 @@ public class TransacaoService {
 
         contaOrigem.setSaldo(saldoDepoisOrigem);
         contaRepository.save(contaOrigem);
-        log.info("Saque realizado com sucesso para o usuário: {}, valor: {}", user.getEmail(), dto.valor());
+        log.info("Saque realizado com sucesso para o usuário: {}, valor: {}", principal.getEmail(), dto.valor());
 
         TransacaoDomain transacao = transacaoMapper.fromSaqueRequest(dto, contaOrigem, saldoAntesOrigem, saldoDepoisOrigem);
         transacao = transacaoRepository.save(transacao);

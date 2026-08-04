@@ -1,14 +1,11 @@
 package dev.teamwin.contafacil.infra.security;
 
-import dev.teamwin.contafacil.user.UserDomain;
-import dev.teamwin.contafacil.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,22 +20,23 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private static final Logger log = LoggerFactory.getLogger(SecurityFilter.class);
 
-    @Autowired
-    TokenService tokenService;
-    @Autowired
-    UserRepository userRepository;
+    private final TokenService tokenService;
+
+    public SecurityFilter(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        var token = this.recoverToken(request);
-        var login = tokenService.validateToken(token);
+        String token = recoverToken(request);
+        TokenPayload payload = token != null ? tokenService.validateToken(token) : null;
 
-        if (login != null) {
-            UserDomain user = userRepository.findByEmail(login).orElseThrow(() -> new RuntimeException("User Not Found"));
+        if (payload != null) {
             var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-            var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
+            var principal = new AuthenticatedUser(payload.id(), payload.email(), payload.username());
+            var authentication = new UsernamePasswordAuthenticationToken(principal, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("Autenticação JWT bem-sucedida para o usuário: {}", login);
+            log.info("Autenticação JWT bem-sucedida para o usuário: {}", payload.email());
         } else if (token != null) {
             log.warn("Tentativa de autenticação com token JWT inválido na requisição: {}", request.getRequestURI());
         }
@@ -46,8 +44,10 @@ public class SecurityFilter extends OncePerRequestFilter {
     }
 
     private String recoverToken(HttpServletRequest request) {
-        var authHeader = request.getHeader("Authorization");
-        if (authHeader == null) return null;
-        return authHeader.replace("Bearer ", "");
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
+        return authHeader.substring(7);
     }
 }

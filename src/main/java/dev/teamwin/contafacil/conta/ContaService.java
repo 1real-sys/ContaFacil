@@ -7,7 +7,9 @@ import dev.teamwin.contafacil.fatura.FaturaRepository;
 import dev.teamwin.contafacil.fatura.StatusFatura;
 import java.math.BigDecimal;
 
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import dev.teamwin.contafacil.user.UserDomain;
+import dev.teamwin.contafacil.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 @Service
@@ -27,17 +30,20 @@ public class ContaService {
     private final ContaMapper contaMapper;
     private final CartaoRepository cartaoRepository;
     private final FaturaRepository faturaRepository;
+    private final UserRepository userRepository;
 
     private static final Logger log = LoggerFactory.getLogger(ContaService.class);
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @Transactional
     public ContaResponseDTO abrirConta(){
-        UserDomain user  = (UserDomain) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
-        if(!contaRepository.findByUserId(user.getId()).isEmpty()){
+        AuthenticatedUser principal = getUsuarioAutenticado();
+        if(!contaRepository.findByUserId(principal.getId()).isEmpty()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já possui uma conta");
         }
+
+        UserDomain user = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
 
         String contaCorrente = gerarContaCorrente();
         String agencia = gerarAgencia();
@@ -49,7 +55,7 @@ public class ContaService {
     }
 
     private String gerarAgencia(){
-        int numero = new Random().nextInt(999) + 1;
+        int numero = RANDOM.nextInt(999) + 1;
         return String.format("%04d", numero);
 
     }
@@ -57,7 +63,7 @@ public class ContaService {
     private String gerarContaCorrente(){
         String contaCorrente;
         do {
-            int numero = new Random().nextInt(999999) + 1;
+            int numero = RANDOM.nextInt(999999) + 1;
             contaCorrente = String.format("%06d", numero);
         } while (contaRepository.findByContaCorrente(contaCorrente).isPresent());
         return contaCorrente;
@@ -66,10 +72,8 @@ public class ContaService {
 
     @Transactional(readOnly = true)
     public ContaResponseDTO minhaConta(){
-        UserDomain user = (UserDomain) SecurityContextHolder.getContext().
-                getAuthentication()
-                .getPrincipal();
-        return contaRepository.findByUserId(user.getId())
+        AuthenticatedUser principal = getUsuarioAutenticado();
+        return contaRepository.findByUserId(principal.getId())
                 .stream()
                 .findFirst()
                 .map(contaMapper::toResponse)
@@ -77,10 +81,8 @@ public class ContaService {
     }
 
     public SaldoResponseDTO consultarSaldo(){
-        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
-        ContaDomain conta = contaRepository.findByUserId(user.getId())
+        AuthenticatedUser principal = getUsuarioAutenticado();
+        ContaDomain conta = contaRepository.findByUserId(principal.getId())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
@@ -88,11 +90,9 @@ public class ContaService {
     }
     @Transactional
     public String encerrarConta() {
-        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        AuthenticatedUser principal = getUsuarioAutenticado();
 
-        ContaDomain conta = contaRepository.findByUserId(user.getId())
+        ContaDomain conta = contaRepository.findByUserId(principal.getId())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));
@@ -124,9 +124,14 @@ public class ContaService {
         }
 
         contaRepository.delete(conta);
-        log.info("Conta encerrada com sucesso para o usuário: {}", user.getEmail());
+        log.info("Conta encerrada com sucesso para o usuário: {}", principal.getEmail());
         return "Conta encerrada com sucesso";
     }
 
+    private AuthenticatedUser getUsuarioAutenticado() {
+        return (AuthenticatedUser) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+    }
 
 }

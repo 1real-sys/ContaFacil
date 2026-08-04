@@ -1,15 +1,15 @@
 package dev.teamwin.contafacil.user;
 
 
-import dev.teamwin.contafacil.cartao.CartaoService;
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @AllArgsConstructor
 @Service
@@ -23,13 +23,15 @@ public class UserService {
 
 
     public UserResponseDTO meuPerfil(){
-        UserDomain user = getUsuarioAutenticado();
-        return userMapper.map(user);
+        AuthenticatedUser principal = getUsuarioAutenticado();
+        return new UserResponseDTO(principal.getUsername(), principal.getEmail());
     }
 
     @Transactional
     public UserResponseDTO atualizarNome(AtualizarNomeRequestDTO dto){
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser principal = getUsuarioAutenticado();
+        UserDomain user = userRepository.findById(principal.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado"));
         user.setUsername(dto.username());
         user = userRepository.save(user);
         log.info("Nome atualizado para: {} — usuário: {}", dto.username(), user.getEmail());
@@ -37,8 +39,8 @@ public class UserService {
 
     }
 
-    private UserDomain getUsuarioAutenticado(){
-        return (UserDomain) SecurityContextHolder.getContext()
+    private AuthenticatedUser getUsuarioAutenticado(){
+        return (AuthenticatedUser) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
     }

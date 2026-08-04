@@ -4,7 +4,7 @@ package dev.teamwin.contafacil.cartao;
 import dev.teamwin.contafacil.conta.ContaDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
 import dev.teamwin.contafacil.fatura.FaturaRepository;
-import dev.teamwin.contafacil.user.UserDomain;
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Random;
 
 @AllArgsConstructor
 @Service
 public class CartaoService {
 
     private static final Logger log = LoggerFactory.getLogger(CartaoService.class);
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final ContaRepository contaRepository;
     private final CartaoRepository cartaoRepository;
@@ -33,7 +35,7 @@ public class CartaoService {
 
     @Transactional
     public CartaoResponseDTO emitirCartao(CartaoCreateDTO dto) {
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
 
         boolean temCartaoAtivo = cartaoRepository.findByContaId(conta.getId())
@@ -45,13 +47,11 @@ public class CartaoService {
         }
 
         String numeroCartao = gerarNumeroCartaoUnico(dto.bandeira());
-        String cvv = gerarCvv();
 
         CartaoDomain cartao = cartaoMapper.toDomain(
                 dto,
                 conta,
                 numeroCartao,
-                cvv,
                 LocalDateTime.now().plusYears(5),
                 StatusCartao.INATIVO
         );
@@ -62,7 +62,7 @@ public class CartaoService {
     }
     @Transactional
     public CartaoResponseDTO ativarCartao(Long cartaoId){
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
         CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
         if (cartao.getStatus() != StatusCartao.INATIVO) {
@@ -75,7 +75,7 @@ public class CartaoService {
     }
     @Transactional
     public CartaoResponseDTO inativarCartao(Long cartaoId){
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
         CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
         if (cartao.getStatus() != StatusCartao.ATIVO) {
@@ -88,7 +88,7 @@ public class CartaoService {
     }
     @Transactional
     public CartaoResponseDTO solicitarLimite(Long cartaoId){
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
         CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
 
@@ -96,14 +96,14 @@ public class CartaoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Desculpe, sem novas solicitações de limite por enquanto");
         }
 
-        BigDecimal limite = BigDecimal.valueOf(1000 + new Random().nextInt(1501));
+        BigDecimal limite = BigDecimal.valueOf(1000 + RANDOM.nextInt(1501));
         cartao.setLimiteTotal(limite.setScale(2));
         return cartaoMapper.toResponse(cartaoRepository.save(cartao));
 
     }
 
     public List<CartaoResponseDTO> listarMeusCartoes() {
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
 
         return cartaoRepository.findByContaId(conta.getId())
@@ -114,7 +114,7 @@ public class CartaoService {
     }
     @Transactional
     public String cancelarCartao(Long cartaoId) {
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
         CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
 
@@ -138,7 +138,7 @@ public class CartaoService {
     }
 
     public CartaoDadosSensiveisDTO verDadosSensiveis(Long cartaoId) {
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
         CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
         return cartaoMapper.toDadosSensiveis(cartao);
@@ -147,13 +147,12 @@ public class CartaoService {
 
 
 
-
-    private UserDomain getUsuarioAutenticado(){
-        return (UserDomain) SecurityContextHolder.getContext()
+    private AuthenticatedUser getUsuarioAutenticado(){
+        return (AuthenticatedUser) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
     }
-    private ContaDomain getContaUsuario(UserDomain user){
+    private ContaDomain getContaUsuario(AuthenticatedUser user){
         return contaRepository.findByUserId(user.getId())
                 .stream()
                 .findFirst()
@@ -170,14 +169,30 @@ public class CartaoService {
         String prefixo = bandeira == BandeiraCartao.VISA ? "4" : "5";
         String numero;
         do {
-            long parte = (long) (Math.random() * 900_000_000_000_000L) + 100_000_000_000_000L;
-            numero = prefixo + parte; // remove o substring(1)
+            StringBuilder corpo = new StringBuilder(prefixo);
+            for (int i = 0; i < 14; i++) {
+                corpo.append(RANDOM.nextInt(10));
+            }
+            numero = corpo.append(luhnCheckDigit(corpo.toString())).toString();
         } while (cartaoRepository.findByNumeroCartao(numero).isPresent());
         return numero;
     }
 
-    private String gerarCvv() {
-        return String.format("%03d", new Random().nextInt(1000));
+    private static String luhnCheckDigit(String base) {
+        int soma = 0;
+        boolean duplicar = true;
+        for (int i = base.length() - 1; i >= 0; i--) {
+            int digito = base.charAt(i) - '0';
+            if (duplicar) {
+                digito *= 2;
+                if (digito > 9) {
+                    digito -= 9;
+                }
+            }
+            soma += digito;
+            duplicar = !duplicar;
+        }
+        return Integer.toString((10 - (soma % 10)) % 10);
     }
 
     private void validarCartaoAtivoEValido(CartaoDomain cartao) {

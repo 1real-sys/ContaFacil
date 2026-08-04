@@ -1,0 +1,1 @@
+ALTER TABLE cartoes DROP COLUMN cvv;

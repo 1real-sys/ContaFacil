@@ -1,8 +1,8 @@
 package dev.teamwin.contafacil.transacao;
 
 import dev.teamwin.contafacil.conta.ContaDomain;
-import dev.teamwin.contafacil.user.UserDomain;
 import dev.teamwin.contafacil.conta.ContaRepository;
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,11 +26,11 @@ public class ExtratoService {
 
 
     public ExtratoResponseDTO extrato(LocalDate dataInicio, LocalDate dataFim, DescricaoTransacao tipo) {
-        UserDomain user = (UserDomain) SecurityContextHolder.getContext()
+        AuthenticatedUser principal = (AuthenticatedUser) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
 
-        ContaDomain conta = contaRepository.findByUserId(user.getId())
+        ContaDomain conta = contaRepository.findByUserId(principal.getId())
                 .stream()
                 .findFirst()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conta não encontrada"));

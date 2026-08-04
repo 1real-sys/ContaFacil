@@ -50,9 +50,6 @@ public class CartaoDomain {
     @Column(nullable = false, unique = true, length = 19)
     private String numeroCartao;
 
-    @Column(nullable = false, length = 4)
-    private String cvv;
-
     @Column(nullable = false)
     private LocalDateTime dataValidade;
 

@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,22 +26,23 @@ public class AuthService {
     private final TokenService tokenService;
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+    private static final String HASH_SENHA_FAKE = new BCryptPasswordEncoder().encode("senha-inexistente-conta-facil");
 
 
 
     public ResponseDTO login(LoginRequestDTO dto) {
-        UserDomain domain = userRepository.findByEmail(dto.email())
-                .orElseThrow(() ->{
-                    log.warn("Tentativa de login falhou — email não encontrado: {}", dto.email());
-                    return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
-                });
-        if (!passwordEncoder.matches(dto.password(), domain.getPasswordHash())) {
-            log.warn("Tentativa de login falhou — senha incorreta para email: {}", dto.email());
+        UserDomain user = userRepository.findByEmail(dto.email()).orElse(null);
+        boolean senhaCorreta = user != null
+                ? passwordEncoder.matches(dto.password(), user.getPasswordHash())
+                : passwordEncoder.matches(dto.password(), HASH_SENHA_FAKE);
+
+        if (user == null || !senhaCorreta) {
+            log.warn("Tentativa de login falhou para o email: {}", dto.email());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciais inválidas");
         }
-        String token = tokenService.generateToken(domain);
-        log.info("Usuário logado com sucesso: {}", domain.getEmail());
-        return new ResponseDTO(domain.getUsername(), token);
+        String token = tokenService.generateToken(user);
+        log.info("Usuário logado com sucesso: {}", user.getEmail());
+        return new ResponseDTO(user.getUsername(), token);
     }
 
     public ResponseDTO registrar(RegisterRequestDTO dto) {

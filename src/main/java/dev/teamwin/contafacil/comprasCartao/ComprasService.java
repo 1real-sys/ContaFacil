@@ -10,8 +10,8 @@ import dev.teamwin.contafacil.fatura.FaturaDomain;
 import dev.teamwin.contafacil.fatura.FaturaRepository;
 import dev.teamwin.contafacil.fatura.FaturaService;
 import dev.teamwin.contafacil.fatura.StatusFatura;
+import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import dev.teamwin.contafacil.service.AuthService;
-import dev.teamwin.contafacil.user.UserDomain;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class ComprasService {
 
     @Transactional
     public CompraCartaoResponseDTO lancarCompra(Long cartaoId, CompraCartaoRequestDTO dto){
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
         CartaoDomain cartao = getCartaoUsuario(cartaoId, conta);
 
@@ -69,7 +69,7 @@ public class ComprasService {
     }
     @Transactional
     public CompraCartaoResponseDTO cancelarCompra(Long compraId){
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
 
         ComprasCartaoDomain compra = comprasCartaoRepository.findById(compraId)
@@ -116,7 +116,7 @@ public class ComprasService {
      */
     @Transactional
     public CompraCartaoResponseDTO estornarCompra(Long compraId) {
-        UserDomain user = getUsuarioAutenticado();
+        AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
 
         ComprasCartaoDomain compra = comprasCartaoRepository.findById(compraId)
@@ -154,12 +154,12 @@ public class ComprasService {
 
 
 
-    private UserDomain getUsuarioAutenticado(){
-        return (UserDomain) SecurityContextHolder.getContext()
+    private AuthenticatedUser getUsuarioAutenticado(){
+        return (AuthenticatedUser) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
     }
-    private ContaDomain getContaUsuario(UserDomain user){
+    private ContaDomain getContaUsuario(AuthenticatedUser user){
         return contaRepository.findByUserId(user.getId())
                 .stream()
                 .findFirst()
