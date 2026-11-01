@@ -24,7 +24,7 @@ export class MainLayout {
 
   userName = computed(() => this.storage.getUserName() || 'Usuário');
   readonly theme = this.themeService.theme;
-  readonly themes: Theme[] = ['purple', 'orange', 'green', 'red'];
+  readonly themes: Theme[] = ['green', 'purple', 'orange', 'red'];
 
   setTheme(t: Theme): void {
     this.themeService.setTheme(t);

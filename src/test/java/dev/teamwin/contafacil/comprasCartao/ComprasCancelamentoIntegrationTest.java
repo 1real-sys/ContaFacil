@@ -96,7 +96,7 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
     void ajusteSemPagamentoRecusaSemAlterarDados() {
         var compra = comprar("150");
 
-        assertThatThrownBy(() -> comprasService.cancelarCompraComAjuste(compra.id()))
+        assertThatThrownBy(() -> comprasService.estornarCompra(compra.id()))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(error -> assertThat(((ResponseStatusException) error).getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
         recarregarEntidades();
@@ -113,7 +113,7 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
         comprar("100");
         pagar(compra.faturaId(), "50");
 
-        comprasService.cancelarCompraComAjuste(compra.id());
+        comprasService.estornarCompra(compra.id());
         recarregarEntidades();
 
         conferirFatura(compra.faturaId(), "100", "50", StatusFatura.ABERTA);
@@ -128,7 +128,7 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
         comprar("100");
         pagar(compra.faturaId(), "100");
 
-        comprasService.cancelarCompraComAjuste(compra.id());
+        comprasService.estornarCompra(compra.id());
         recarregarEntidades();
 
         conferirFatura(compra.faturaId(), "100", "100", StatusFatura.PAGA);
@@ -143,7 +143,7 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
         comprar("100");
         pagar(compra.faturaId(), "150");
 
-        comprasService.cancelarCompraComAjuste(compra.id());
+        comprasService.estornarCompra(compra.id());
         recarregarEntidades();
 
         conferirFatura(compra.faturaId(), "150", "150", StatusFatura.PAGA);
@@ -161,7 +161,7 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
         var compra = comprar("150");
         pagar(compra.faturaId(), "100");
 
-        comprasService.cancelarCompraComAjuste(compra.id());
+        comprasService.estornarCompra(compra.id());
         recarregarEntidades();
 
         conferirFatura(compra.faturaId(), "100", "100", StatusFatura.PAGA);
@@ -176,7 +176,7 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
         var compra = comprar("100");
         pagar(compra.faturaId(), "100");
 
-        comprasService.cancelarCompraComAjuste(compra.id());
+        comprasService.estornarCompra(compra.id());
         recarregarEntidades();
 
         conferirFatura(compra.faturaId(), "100", "100", StatusFatura.PAGA);
@@ -189,9 +189,9 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
     void cancelamentoRepetidoNaoCreditaDuasVezes() {
         var compra = comprar("100");
         pagar(compra.faturaId(), "100");
-        comprasService.cancelarCompraComAjuste(compra.id());
+        comprasService.estornarCompra(compra.id());
 
-        assertThatThrownBy(() -> comprasService.cancelarCompraComAjuste(compra.id()))
+        assertThatThrownBy(() -> comprasService.estornarCompra(compra.id()))
                 .isInstanceOf(ResponseStatusException.class);
         recarregarEntidades();
 
@@ -206,8 +206,8 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
         var segundaCompra = comprar("100");
         pagar(primeiraCompra.faturaId(), "150");
 
-        comprasService.cancelarCompraComAjuste(primeiraCompra.id());
-        comprasService.cancelarCompraComAjuste(segundaCompra.id());
+        comprasService.estornarCompra(primeiraCompra.id());
+        comprasService.estornarCompra(segundaCompra.id());
         recarregarEntidades();
 
         conferirFatura(primeiraCompra.faturaId(), "150", "150", StatusFatura.PAGA);
@@ -230,7 +230,7 @@ class ComprasCancelamentoIntegrationTest extends BaseIntegrationTest {
         contaRepository.save(outraConta);
         autenticar(outro);
 
-        assertThatThrownBy(() -> comprasService.cancelarCompraComAjuste(compra.id()))
+        assertThatThrownBy(() -> comprasService.estornarCompra(compra.id()))
                 .isInstanceOf(ResponseStatusException.class)
                 .satisfies(error -> assertThat(((ResponseStatusException) error).getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND));
         recarregarEntidades();

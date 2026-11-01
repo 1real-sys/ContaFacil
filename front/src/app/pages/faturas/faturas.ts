@@ -36,8 +36,7 @@ export class Faturas implements OnInit {
 
   compraDetalhe = signal<CompraCartaoResponse | null>(null);
   cancelando = signal(false);
-  estornando = signal(false);
-  confirmandoAcao = signal<'cancelar' | 'estornar' | null>(null);
+  confirmandoCancelamento = signal(false);
 
   comprasVisiveis = computed(() => {
     const compras = this.faturaSelecionada()?.compras ?? [];
@@ -147,19 +146,15 @@ export class Faturas implements OnInit {
 
   fecharDetalhe(): void {
     this.compraDetalhe.set(null);
-    this.confirmandoAcao.set(null);
+    this.confirmandoCancelamento.set(false);
   }
 
   confirmarCancelamento(): void {
-    this.confirmandoAcao.set('cancelar');
-  }
-
-  confirmarEstorno(): void {
-    this.confirmandoAcao.set('estornar');
+    this.confirmandoCancelamento.set(true);
   }
 
   cancelarConfirmacao(): void {
-    this.confirmandoAcao.set(null);
+    this.confirmandoCancelamento.set(false);
   }
 
   executarCancelamento(): void {
@@ -168,38 +163,19 @@ export class Faturas implements OnInit {
     if (!compra || !fatura) return;
     this.cancelando.set(true);
     const requisicao = fatura.valorPago > 0
-      ? this.contaService.cancelarCompraComAjuste(compra.id)
+      ? this.contaService.estornarCompra(compra.id)
       : this.contaService.cancelarCompra(compra.id);
     requisicao.subscribe({
       next: () => {
         this.cancelando.set(false);
-        this.confirmandoAcao.set(null);
+        this.confirmandoCancelamento.set(false);
         this.compraDetalhe.set(null);
         this.carregarHistorico();
       },
       error: (err: HttpErrorResponse) => {
         this.cancelando.set(false);
-        this.confirmandoAcao.set(null);
+        this.confirmandoCancelamento.set(false);
         this.error.set(err.error?.message || err.error || 'Erro ao cancelar compra.');
-      },
-    });
-  }
-
-  executarEstorno(): void {
-    const compra = this.compraDetalhe();
-    if (!compra) return;
-    this.estornando.set(true);
-    this.contaService.estornarCompra(compra.id).subscribe({
-      next: () => {
-        this.estornando.set(false);
-        this.confirmandoAcao.set(null);
-        this.compraDetalhe.set(null);
-        this.carregarHistorico();
-      },
-      error: (err: HttpErrorResponse) => {
-        this.estornando.set(false);
-        this.confirmandoAcao.set(null);
-        this.error.set(err.error?.message || err.error || 'Erro ao estornar compra.');
       },
     });
   }

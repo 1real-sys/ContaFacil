@@ -2,7 +2,8 @@ import { Injectable, signal, effect } from '@angular/core';
 
 export type Theme = 'purple' | 'orange' | 'green' | 'red';
 
-const THEME_KEY = 'cf-theme';
+const THEME_KEY = 'cf-theme-v2';
+const LEGACY_THEME_KEY = 'cf-theme';
 const THEME_CLASS_PREFIX = 'theme-';
 
 @Injectable({ providedIn: 'root' })
@@ -39,10 +40,16 @@ export class ThemeService {
       if (stored === 'orange' || stored === 'green' || stored === 'purple' || stored === 'red') {
         return stored;
       }
+
+      const legacy = localStorage.getItem(LEGACY_THEME_KEY);
+      // O tema roxo antigo também era salvo automaticamente; agora ele migra para verde.
+      if (legacy === 'orange' || legacy === 'green' || legacy === 'red') {
+        return legacy;
+      }
     } catch {
       // localStorage indisponível
     }
-    return 'purple';
+    return 'green';
   }
 
   private save(t: Theme): void {

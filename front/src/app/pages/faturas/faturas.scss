@@ -296,6 +296,11 @@ h2 {
   text-overflow: ellipsis;
 }
 
+.compra-estab.cancelada {
+  color: var(--cf-text-muted);
+  text-decoration: line-through;
+}
+
 .compra-meta {
   font-size: 12px;
   color: var(--cf-text-muted);

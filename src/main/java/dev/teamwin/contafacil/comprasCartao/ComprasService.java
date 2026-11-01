@@ -11,17 +11,14 @@ import dev.teamwin.contafacil.fatura.FaturaRepository;
 import dev.teamwin.contafacil.fatura.FaturaService;
 import dev.teamwin.contafacil.fatura.StatusFatura;
 import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
-import dev.teamwin.contafacil.service.AuthService;
 import dev.teamwin.contafacil.transacao.DescricaoTransacao;
 import dev.teamwin.contafacil.transacao.TransacaoDomain;
 import dev.teamwin.contafacil.transacao.TransacaoRepository;
 
-import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,7 +92,7 @@ public class ComprasService {
         }
         if (fatura.getValorPago().compareTo(BigDecimal.ZERO) > 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Fatura já possui pagamento; use o cancelamento com ajuste");
+                    "Fatura já possui pagamento; use o estorno");
         }
 
 
@@ -112,7 +109,7 @@ public class ComprasService {
     }
 
     @Transactional
-    public CompraCartaoResponseDTO cancelarCompraComAjuste(Long compraId){
+    public CompraCartaoResponseDTO estornarCompra(Long compraId){
         AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
 
@@ -176,14 +173,6 @@ public class ComprasService {
         return compraCartaoMapper.toResponse(compra);
     }
 
-
-
-
-    /** Mantém a rota antiga de estorno usando a mesma regra de crédito de confiança. */
-    @Transactional
-    public CompraCartaoResponseDTO estornarCompra(Long compraId) {
-        return cancelarCompraComAjuste(compraId);
-    }
 
 
 

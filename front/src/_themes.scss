@@ -1,13 +1,13 @@
 :root,
-.theme-purple {
-  --cf-primary: #820ad1;
-  --cf-primary-hover: #6d08b0;
-  --cf-primary-light: rgba(130, 10, 209, 0.12);
-  --cf-primary-light2: rgba(130, 10, 209, 0.08);
-  --cf-primary-light3: rgba(130, 10, 209, 0.2);
-  --cf-primary-gradient-end: #4c1d95;
-  --cf-accent: #c084fc;
-  --cf-avatar-gradient-end: #a855f7;
+.theme-green {
+  --cf-primary: #21c25e;
+  --cf-primary-hover: #1ba34e;
+  --cf-primary-light: rgba(33, 194, 94, 0.12);
+  --cf-primary-light2: rgba(33, 194, 94, 0.08);
+  --cf-primary-light3: rgba(33, 194, 94, 0.2);
+  --cf-primary-gradient-end: #15803d;
+  --cf-accent: #4ade80;
+  --cf-avatar-gradient-end: #22c55e;
 
   --cf-bg: #121214;
   --cf-bg-surface: #15141a;
@@ -33,15 +33,15 @@
   --cf-card-mc-end: #303030;
 }
 
-.theme-green {
-  --cf-primary: #21c25e;
-  --cf-primary-hover: #1ba34e;
-  --cf-primary-light: rgba(33, 194, 94, 0.12);
-  --cf-primary-light2: rgba(33, 194, 94, 0.08);
-  --cf-primary-light3: rgba(33, 194, 94, 0.2);
-  --cf-primary-gradient-end: #15803d;
-  --cf-accent: #4ade80;
-  --cf-avatar-gradient-end: #22c55e;
+.theme-purple {
+  --cf-primary: #820ad1;
+  --cf-primary-hover: #6d08b0;
+  --cf-primary-light: rgba(130, 10, 209, 0.12);
+  --cf-primary-light2: rgba(130, 10, 209, 0.08);
+  --cf-primary-light3: rgba(130, 10, 209, 0.2);
+  --cf-primary-gradient-end: #4c1d95;
+  --cf-accent: #c084fc;
+  --cf-avatar-gradient-end: #a855f7;
 
   --cf-bg: #121214;
   --cf-bg-surface: #15141a;
