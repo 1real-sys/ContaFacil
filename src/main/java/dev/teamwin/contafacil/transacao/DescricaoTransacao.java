@@ -4,5 +4,6 @@ public enum DescricaoTransacao {
     DEPOSITO,
     SAQUE,
     TED,
-    PAGAMENTO_FATURA_CARTAO
+    PAGAMENTO_FATURA_CARTAO,
+    CREDITO_CONFIANCA
 }

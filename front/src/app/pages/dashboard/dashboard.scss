@@ -411,7 +411,8 @@
   flex-shrink: 0;
 }
 
-.tx-icon.deposito {
+.tx-icon.deposito,
+.tx-icon.credito_confianca {
   background: rgba(4, 211, 97, 0.12);
   color: #04d361;
 }
@@ -465,7 +466,8 @@
   font-weight: 600;
 }
 
-.tx-value.deposito { color: #04d361; }
+.tx-value.deposito,
+.tx-value.credito_confianca { color: #04d361; }
 .tx-value.saque { color: #f87171; }
 .tx-value.ted { color: #f87171; }
 .tx-value.pagamento_fatura_cartao { color: #f87171; }

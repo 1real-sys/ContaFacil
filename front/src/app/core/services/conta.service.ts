@@ -92,6 +92,10 @@ export class ContaService {
     return this.http.patch<CompraCartaoResponse>(`${this.comprasUrl}/${compraId}/cancelar`, {});
   }
 
+  cancelarCompraComAjuste(compraId: number): Observable<CompraCartaoResponse> {
+    return this.http.patch<CompraCartaoResponse>(`${this.comprasUrl}/${compraId}/cancelar-com-ajuste`, {});
+  }
+
   estornarCompra(compraId: number): Observable<CompraCartaoResponse> {
     return this.http.patch<CompraCartaoResponse>(`${this.comprasUrl}/${compraId}/estornar`, {});
   }

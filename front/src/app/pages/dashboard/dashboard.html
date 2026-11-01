@@ -191,7 +191,7 @@
             </div>
             <div class="tx-details">
               <span class="tx-value" [class]="tipoClass(tx.tipo)">
-                {{ tx.tipo === 'DEPOSITO' ? '+' : '-' }}{{ formatCurrency(tx.valor) }}
+                {{ tx.tipo === 'DEPOSITO' || tx.tipo === 'CREDITO_CONFIANCA' ? '+' : '-' }}{{ formatCurrency(tx.valor) }}
               </span>
               <span class="tx-date">{{ formatDate(tx.dataTransacao) }}</span>
             </div>

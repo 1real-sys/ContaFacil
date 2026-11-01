@@ -164,9 +164,13 @@ export class Faturas implements OnInit {
 
   executarCancelamento(): void {
     const compra = this.compraDetalhe();
-    if (!compra) return;
+    const fatura = this.faturaSelecionada();
+    if (!compra || !fatura) return;
     this.cancelando.set(true);
-    this.contaService.cancelarCompra(compra.id).subscribe({
+    const requisicao = fatura.valorPago > 0
+      ? this.contaService.cancelarCompraComAjuste(compra.id)
+      : this.contaService.cancelarCompra(compra.id);
+    requisicao.subscribe({
       next: () => {
         this.cancelando.set(false);
         this.confirmandoAcao.set(null);

@@ -1,7 +1,7 @@
 export interface ExtratoItem {
   transacaoId: number;
   dataTransacao: string;
-  tipo: 'DEPOSITO' | 'SAQUE' | 'TED';
+  tipo: 'DEPOSITO' | 'SAQUE' | 'TED' | 'PAGAMENTO_FATURA_CARTAO' | 'CREDITO_CONFIANCA';
   valor: number;
   saldoAntes: number;
   saldoDepois: number;

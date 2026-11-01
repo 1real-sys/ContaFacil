@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { ContaService } from '../../core/services/conta.service';
 import { ExtratoResponse, ExtratoItem } from '../../models/extrato-response.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { formatLocalDate } from '../../core/local-date';
 
 const PAGE_SIZE = 5;
 
@@ -26,11 +27,11 @@ export class Extrato implements OnInit {
   tipo = signal('');
 
   visibleCount = signal(PAGE_SIZE);
-  hoje = new Date().toISOString().split('T')[0];
+  hoje = formatLocalDate(new Date());
 
   itensVisiveis = computed<ExtratoItem[]>(() => {
     const items = this.extrato()?.itens ?? [];
-    return items.length > 0 ? items.slice(-this.visibleCount()) : items;
+    return items.slice(0, this.visibleCount());
   });
 
   mostrarMais = computed(() => {
@@ -122,6 +123,7 @@ export class Extrato implements OnInit {
       SAQUE: 'Saque',
       TED: 'Transferência',
       PAGAMENTO_FATURA_CARTAO: 'Pagamento Fatura',
+      CREDITO_CONFIANCA: 'Crédito de confiança',
     };
     return map[tipo] || tipo;
   }
@@ -132,6 +134,7 @@ export class Extrato implements OnInit {
       SAQUE: '\u2191',
       TED: '\u2192',
       PAGAMENTO_FATURA_CARTAO: '\u{1F4B3}',
+      CREDITO_CONFIANCA: '\u2193',
     };
     return map[tipo] || '\u2022';
   }

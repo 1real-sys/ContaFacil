@@ -7,6 +7,7 @@ import { CartaoResponse } from '../../models/cartao-response.model';
 import { ExtratoItem } from '../../models/extrato-response.model';
 import { FaturaResponse } from '../../models/fatura-response.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { formatLocalDate } from '../../core/local-date';
 
 @Component({
   selector: 'app-dashboard',
@@ -89,13 +90,13 @@ export class Dashboard implements OnInit {
     const trintaDiasAtras = new Date();
     trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30);
 
-    const dataInicio = trintaDiasAtras.toISOString().split('T')[0];
-    const dataFim = hoje.toISOString().split('T')[0];
+    const dataInicio = formatLocalDate(trintaDiasAtras);
+    const dataFim = formatLocalDate(hoje);
 
     this.contaService.extrato(dataInicio, dataFim).subscribe({
       next: (extrato) => {
         this.ultimasTransacoes.set(
-          extrato.itens.slice().reverse().slice(0, 5)
+          extrato.itens.slice(0, 5)
         );
         this.loadingTransacoes.set(false);
       },
@@ -157,6 +158,7 @@ export class Dashboard implements OnInit {
       SAQUE: 'Saque',
       TED: 'Transferência',
       PAGAMENTO_FATURA_CARTAO: 'Pagamento Fatura',
+      CREDITO_CONFIANCA: 'Crédito de confiança',
     };
     return map[tipo] || tipo;
   }
@@ -167,6 +169,7 @@ export class Dashboard implements OnInit {
       SAQUE: '\u2191',
       TED: '\u2192',
       PAGAMENTO_FATURA_CARTAO: '\u{1F4B3}',
+      CREDITO_CONFIANCA: '\u2193',
     };
     return map[tipo] || '\u2022';
   }

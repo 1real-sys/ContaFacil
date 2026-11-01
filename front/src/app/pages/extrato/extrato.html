@@ -34,6 +34,7 @@
           <option value="SAQUE">Saque</option>
           <option value="TED">TED</option>
           <option value="PAGAMENTO_FATURA_CARTAO">Pagamento Fatura</option>
+          <option value="CREDITO_CONFIANCA">Crédito de confiança</option>
         </select>
       </div>
       <button class="btn-filtrar" (click)="filtrar()" [disabled]="loading()">
@@ -84,7 +85,7 @@
               <span class="tx-date">{{ formatDateTime(tx.dataTransacao) }}</span>
             </div>
             <div class="tx-value" [class]="tx.tipo.toLowerCase()">
-              {{ tx.tipo === 'DEPOSITO' ? '+' : '-' }}{{ formatCurrency(tx.valor) }}
+              {{ tx.tipo === 'DEPOSITO' || tx.tipo === 'CREDITO_CONFIANCA' ? '+' : '-' }}{{ formatCurrency(tx.valor) }}
             </div>
           </div>
         }

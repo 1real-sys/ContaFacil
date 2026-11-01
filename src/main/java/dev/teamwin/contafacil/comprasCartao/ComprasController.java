@@ -29,4 +29,10 @@ public class ComprasController {
     public ResponseEntity<CompraCartaoResponseDTO> estornarCompra(@PathVariable Long compraId) {
         return ResponseEntity.ok(comprasService.estornarCompra(compraId));
     }
+
+    @PatchMapping("/{compraId}/cancelar-com-ajuste")
+    public ResponseEntity<CompraCartaoResponseDTO> cancelarCompraComAjuste(
+            @PathVariable Long compraId) {
+        return ResponseEntity.ok(comprasService.cancelarCompraComAjuste(compraId));
+    }
 }

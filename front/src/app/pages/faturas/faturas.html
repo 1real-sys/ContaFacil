@@ -161,10 +161,8 @@
             </button>
             <button class="btn-outline" (click)="cancelarConfirmacao()">Voltar</button>
           } @else if (compraDetalhe()!.status === 'AUTORIZADA') {
-            @if (faturaSelecionada()!.status === 'ABERTA') {
+            @if (faturaSelecionada()!.status === 'ABERTA' || faturaSelecionada()!.status === 'PAGA') {
               <button class="btn-danger-outline" (click)="confirmarCancelamento()">Cancelar Compra</button>
-            } @else if (faturaSelecionada()!.status === 'PAGA') {
-              <button class="btn-danger-outline" (click)="confirmarEstorno()">Solicitar Estorno</button>
             }
           }
           <button class="btn-outline" (click)="fecharDetalhe()">Fechar</button>

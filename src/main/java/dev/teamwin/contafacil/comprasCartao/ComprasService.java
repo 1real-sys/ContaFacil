@@ -12,10 +12,16 @@ import dev.teamwin.contafacil.fatura.FaturaService;
 import dev.teamwin.contafacil.fatura.StatusFatura;
 import dev.teamwin.contafacil.infra.security.AuthenticatedUser;
 import dev.teamwin.contafacil.service.AuthService;
+import dev.teamwin.contafacil.transacao.DescricaoTransacao;
+import dev.teamwin.contafacil.transacao.TransacaoDomain;
+import dev.teamwin.contafacil.transacao.TransacaoRepository;
+
+import jakarta.persistence.Table;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +40,8 @@ public class ComprasService {
     private final ComprasCartaoRepository comprasCartaoRepository;
     private final FaturaService faturaService;
     private final FaturaRepository faturaRepository;
+    private final AjusteCompraRepository ajusteCompraRepository;
+    private  final TransacaoRepository transacaoRepository;
 
     private static final Logger log = LoggerFactory.getLogger(ComprasService.class);
 
@@ -85,6 +93,11 @@ public class ComprasService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Cancelamento disponível apenas para faturas em aberto. Use estorno para faturas pagas.");
         }
+        if (fatura.getValorPago().compareTo(BigDecimal.ZERO) > 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Fatura já possui pagamento; use o cancelamento com ajuste");
+        }
+
 
         CartaoDomain cartao = compra.getFatura().getCartao();
         cartao.setLimiteUtilizado(cartao.getLimiteUtilizado().subtract(compra.getValor()));
@@ -98,24 +111,8 @@ public class ComprasService {
         return compraCartaoMapper.toResponse(comprasCartaoRepository.save(compra));
     }
 
-
-
-
-    /**
-     * Estorna uma compra de uma fatura já paga.
-     *
-     * Este mét0do foi criado para corrigir um bug não previsto no fluxo original:
-     * o cancelarCompra() só funcionava para faturas com status ABERTA. Quando o
-     * cliente pagava a fatura e depois tentava cancelar uma compra, ocorria erro
-     * interno pois as regras de negócio são diferentes — em uma fatura paga, o
-     * dinheiro já saiu da conta do cliente e precisa ser devolvido via estorno.
-     *
-     * Diferença entre cancelar e estornar:
-     * - Cancelar: fatura ABERTA, compra não foi cobrada, apenas devolve o limite.
-     * - Estornar: fatura PAGA, compra já foi cobrada, devolve o valor ao saldo.
-     */
     @Transactional
-    public CompraCartaoResponseDTO estornarCompra(Long compraId) {
+    public CompraCartaoResponseDTO cancelarCompraComAjuste(Long compraId){
         AuthenticatedUser user = getUsuarioAutenticado();
         ContaDomain conta = getContaUsuario(user);
 
@@ -123,33 +120,69 @@ public class ComprasService {
                 .filter(c -> c.getFatura().getCartao().getConta().getId().equals(conta.getId()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Compra não encontrada"));
 
+        if (compra.getStatus() == StatusCompra.CANCELADA){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Compra já está cancelada");
+        }
+
         FaturaDomain fatura = compra.getFatura();
-        if(fatura.getStatus() != StatusFatura.PAGA){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estorno disponível apenas para faturas pagas. Para faturas abertas, cancele a compra.");
+
+        if (fatura.getValorPago().compareTo(BigDecimal.ZERO) == 0){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Fatura sem pagamento; Use o cancelamento comum");
         }
-        if(compra.getStatus() == StatusCompra.CANCELADA){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Compra já está cancelada, não é possível estornar");
+        BigDecimal valorAbatido = compra.getValor().min(fatura.getValorPendente());
+        BigDecimal valorCreditado = compra.getValor().subtract(valorAbatido);
+
+        CartaoDomain cartao = fatura.getCartao();
+
+        // Só a parte ainda pendente sai da fatura e libera limite.
+        fatura.setValorTotal(fatura.getValorTotal().subtract(valorAbatido));
+        cartao.setLimiteUtilizado(cartao.getLimiteUtilizado().subtract(valorAbatido));
+
+        if (fatura.getValorPendente().compareTo(BigDecimal.ZERO) == 0) {
+            fatura.setStatus(StatusFatura.PAGA);
         }
 
-        BigDecimal valorEstorno = compra.getValor();
-        fatura.setValorTotal(fatura.getValorTotal().subtract(valorEstorno));
+        // A parte já paga volta para a conta e aparece no extrato.
+        if (valorCreditado.compareTo(BigDecimal.ZERO) > 0) {
+            BigDecimal saldoAntes = conta.getSaldo();
+            conta.setSaldo(saldoAntes.add(valorCreditado));
 
-        BigDecimal novoValorPago = fatura.getValorPago().subtract(valorEstorno);
-        fatura.setValorPago(novoValorPago.max(BigDecimal.ZERO)); //nunca fica negativo
+            TransacaoDomain transacao = new TransacaoDomain();
+            transacao.setConta(conta);
+            transacao.setDescricao(DescricaoTransacao.CREDITO_CONFIANCA);
+            transacao.setValor(valorCreditado);
+            transacao.setSaldoAntes(saldoAntes);
+            transacao.setSaldoDepois(conta.getSaldo());
+            transacao.setObservacao("Cancelamento da compra " + compra.getId());
 
-        if(fatura.getValorPago().compareTo(fatura.getValorTotal()) < 0){
-            fatura.setStatus(StatusFatura.ABERTA);
+            contaRepository.save(conta);
+            transacaoRepository.save(transacao);
         }
 
-        faturaRepository.save(fatura);
-
-        conta.setSaldo(conta.getSaldo().add(valorEstorno));
-        contaRepository.save(conta);
+        // Guarda quanto foi abatido e quanto virou crédito.
+        AjusteCompraDomain ajuste = new AjusteCompraDomain();
+        ajuste.setCompra(compra);
+        ajuste.setValorAbatido(valorAbatido);
+        ajuste.setValorCreditado(valorCreditado);
 
         compra.setStatus(StatusCompra.CANCELADA);
-        log.info("Compra estornada com sucesso para o usuário: {}, valor: {}", user.getEmail(), compra.getValor());
 
-        return compraCartaoMapper.toResponse(comprasCartaoRepository.save(compra));
+        cartaoRepository.save(cartao);
+        faturaRepository.save(fatura);
+        comprasCartaoRepository.save(compra);
+        ajusteCompraRepository.save(ajuste);
+
+        return compraCartaoMapper.toResponse(compra);
+    }
+
+
+
+
+    /** Mantém a rota antiga de estorno usando a mesma regra de crédito de confiança. */
+    @Transactional
+    public CompraCartaoResponseDTO estornarCompra(Long compraId) {
+        return cancelarCompraComAjuste(compraId);
     }
 
 
