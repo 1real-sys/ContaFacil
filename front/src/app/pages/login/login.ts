@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { LoginRequest } from '../../models/login-request.model';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { LoginRequest } from '../../models/login-request.model';
 export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notification = inject(NotificationService);
 
   email = '';
   password = '';
@@ -39,11 +41,12 @@ export class Login {
     this.authService.login(data).subscribe({
       next: () => {
         this.loading.set(false);
+        this.notification.success('Login realizado com sucesso.');
         this.router.navigate(['/dashboard']);
       },
       error: (err: Error) => {
         this.loading.set(false);
-        this.error.set(err.message || 'Credenciais inválidas.');
+        this.notification.error(err.message || 'Credenciais inválidas.');
       },
     });
   }

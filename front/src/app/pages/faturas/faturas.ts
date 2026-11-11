@@ -5,6 +5,7 @@ import { CartaoResponse } from '../../models/cartao-response.model';
 import { FaturaResponse } from '../../models/fatura-response.model';
 import { CompraCartaoResponse } from '../../models/compra-cartao.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NotificationService, httpErrorMessage } from '../../core/services/notification.service';
 
 const PAGE_SIZE = 10;
 
@@ -18,6 +19,7 @@ const PAGE_SIZE = 10;
 })
 export class Faturas implements OnInit {
   private readonly contaService = inject(ContaService);
+  private readonly notification = inject(NotificationService);
 
   cartaoAtivo = signal<CartaoResponse | null>(null);
   faturas = signal<FaturaResponse[]>([]);
@@ -131,11 +133,12 @@ export class Faturas implements OnInit {
         this.pagando.set(false);
         this.showPagar.set(false);
         this.valorPagamento.set('');
+        this.notification.success('Pagamento da fatura realizado com sucesso.');
         this.carregarHistorico();
       },
       error: (err: HttpErrorResponse) => {
         this.pagando.set(false);
-        this.pagarError.set(err.error?.message || err.error || 'Erro ao pagar fatura.');
+        this.notification.error(httpErrorMessage(err, 'Não foi possível pagar a fatura.'));
       },
     });
   }
@@ -170,12 +173,13 @@ export class Faturas implements OnInit {
         this.cancelando.set(false);
         this.confirmandoCancelamento.set(false);
         this.compraDetalhe.set(null);
+        this.notification.success('Compra cancelada com sucesso.');
         this.carregarHistorico();
       },
       error: (err: HttpErrorResponse) => {
         this.cancelando.set(false);
         this.confirmandoCancelamento.set(false);
-        this.error.set(err.error?.message || err.error || 'Erro ao cancelar compra.');
+        this.notification.error(httpErrorMessage(err, 'Não foi possível cancelar a compra.'));
       },
     });
   }

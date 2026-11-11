@@ -5,6 +5,7 @@ import { CartaoResponse } from '../../models/cartao-response.model';
 import { CartaoDadosSensiveis } from '../../models/cartao-dados-sensiveis.model';
 import { CompraCartaoResponse } from '../../models/compra-cartao.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NotificationService, httpErrorMessage } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-cartoes',
@@ -16,17 +17,16 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class Cartoes implements OnInit, OnDestroy {
   private readonly contaService = inject(ContaService);
+  private readonly notification = inject(NotificationService);
 
   cartoes = signal<CartaoResponse[]>([]);
   loading = signal(true);
   error = signal('');
   acaoLoading = signal(false);
-  acaoError = signal('');
 
   showEmitirForm = signal(false);
   bandeira = signal('VISA');
   emitirLoading = signal(false);
-  emitirError = signal('');
 
   showCompraForm = signal(false);
   compraValor = signal('');
@@ -80,16 +80,16 @@ export class Cartoes implements OnInit, OnDestroy {
 
   emitirCartao(): void {
     this.emitirLoading.set(true);
-    this.emitirError.set('');
     this.contaService.emitirCartao(this.bandeira()).subscribe({
       next: () => {
         this.emitirLoading.set(false);
         this.showEmitirForm.set(false);
+        this.notification.success('Cartão emitido com sucesso.');
         this.carregarCartoes();
       },
       error: (err: HttpErrorResponse) => {
         this.emitirLoading.set(false);
-        this.emitirError.set(err.error?.message || err.error || 'Erro ao emitir cartão.');
+        this.notification.error(httpErrorMessage(err, 'Não foi possível emitir o cartão.'));
       },
     });
   }
@@ -98,9 +98,11 @@ export class Cartoes implements OnInit, OnDestroy {
     const c = this.cartaoPrincipal();
     if (!c) return;
     this.acaoLoading.set(true);
-    this.acaoError.set('');
     this.contaService.solicitarLimite(c.id).subscribe({
-      next: (cartao) => this.atualizarCartao(cartao),
+      next: (cartao) => {
+        this.atualizarCartao(cartao);
+        this.notification.success('Limite solicitado com sucesso.');
+      },
       error: (err) => this.handleAcaoError(err),
     });
   }
@@ -109,9 +111,11 @@ export class Cartoes implements OnInit, OnDestroy {
     const c = this.cartaoPrincipal();
     if (!c) return;
     this.acaoLoading.set(true);
-    this.acaoError.set('');
     this.contaService.desbloquearCartao(c.id).subscribe({
-      next: (cartao) => this.atualizarCartao(cartao),
+      next: (cartao) => {
+        this.atualizarCartao(cartao);
+        this.notification.success('Cartão ativado com sucesso.');
+      },
       error: (err) => this.handleAcaoError(err),
     });
   }
@@ -120,9 +124,11 @@ export class Cartoes implements OnInit, OnDestroy {
     const c = this.cartaoPrincipal();
     if (!c) return;
     this.acaoLoading.set(true);
-    this.acaoError.set('');
     this.contaService.bloquearCartao(c.id).subscribe({
-      next: (cartao) => this.atualizarCartao(cartao),
+      next: (cartao) => {
+        this.atualizarCartao(cartao);
+        this.notification.success('Cartão bloqueado com sucesso.');
+      },
       error: (err) => this.handleAcaoError(err),
     });
   }
@@ -132,10 +138,10 @@ export class Cartoes implements OnInit, OnDestroy {
     if (!c) return;
     this.showConfirmCancel.set(false);
     this.acaoLoading.set(true);
-    this.acaoError.set('');
     this.contaService.cancelarCartao(c.id).subscribe({
       next: () => {
         this.acaoLoading.set(false);
+        this.notification.success('Cartão cancelado com sucesso.');
         this.carregarCartoes();
       },
       error: (err) => this.handleAcaoError(err),
@@ -172,11 +178,15 @@ export class Cartoes implements OnInit, OnDestroy {
         next: (res) => {
           this.comprovanteCompra.set(res);
           this.compraLoading.set(false);
+          this.notification.success('Compra efetuada com sucesso.');
           this.carregarCartoes();
         },
         error: (err: HttpErrorResponse) => {
           this.compraLoading.set(false);
-          this.compraError.set(err.error?.message || err.error || 'Erro ao lançar compra.');
+          const message = httpErrorMessage(err, 'Não foi possível efetuar a compra.');
+          this.notification.error(/limite insuficiente/i.test(message)
+            ? 'Compra não efetuada: limite insuficiente.'
+            : message);
         },
       });
   }
@@ -189,7 +199,7 @@ export class Cartoes implements OnInit, OnDestroy {
 
   private handleAcaoError(err: HttpErrorResponse): void {
     this.acaoLoading.set(false);
-    this.acaoError.set(err.error?.message || err.error || 'Erro ao processar ação.');
+    this.notification.error(httpErrorMessage(err, 'Não foi possível concluir a ação.'));
   }
 
   ngOnDestroy(): void {

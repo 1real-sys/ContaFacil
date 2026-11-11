@@ -6,6 +6,7 @@ import { StorageService } from '../../core/services/storage.service';
 import { UserPerfil } from '../../models/user-perfil.model';
 import { ContaResponse } from '../../models/conta-response.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NotificationService, httpErrorMessage } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-perfil',
@@ -19,6 +20,7 @@ export class Perfil implements OnInit {
   private readonly userService = inject(UserService);
   private readonly contaService = inject(ContaService);
   private readonly storage = inject(StorageService);
+  private readonly notification = inject(NotificationService);
 
   perfil = signal<UserPerfil | null>(null);
   conta = signal<ContaResponse | null>(null);
@@ -27,7 +29,6 @@ export class Perfil implements OnInit {
   loadingConta = signal(true);
   saving = signal(false);
   error = signal('');
-  success = signal('');
 
   editingName = signal(false);
   editName = signal('');
@@ -68,7 +69,6 @@ export class Perfil implements OnInit {
     this.editName.set(this.perfil()?.username ?? '');
     this.editingName.set(true);
     this.error.set('');
-    this.success.set('');
   }
 
   cancelarEdicao(): void {
@@ -85,7 +85,6 @@ export class Perfil implements OnInit {
 
     this.saving.set(true);
     this.error.set('');
-    this.success.set('');
 
     this.userService.atualizarNome(novo).subscribe({
       next: (p) => {
@@ -93,11 +92,11 @@ export class Perfil implements OnInit {
         this.storage.setUserName(p.username);
         this.saving.set(false);
         this.editingName.set(false);
-        this.success.set('Nome atualizado com sucesso.');
+        this.notification.success('Nome atualizado com sucesso.');
       },
       error: (err: HttpErrorResponse) => {
         this.saving.set(false);
-        this.error.set(err.error?.message || err.error || 'Erro ao atualizar nome.');
+        this.notification.error(httpErrorMessage(err, 'Não foi possível atualizar o nome.'));
       },
     });
   }

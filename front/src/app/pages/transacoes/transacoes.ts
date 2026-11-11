@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { ContaService } from '../../core/services/conta.service';
 import { TransacaoResponse } from '../../models/transacao-response.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { NotificationService, httpErrorMessage } from '../../core/services/notification.service';
 
 type Tab = 'depositar' | 'sacar' | 'transferir';
 
@@ -19,6 +20,7 @@ type Tab = 'depositar' | 'sacar' | 'transferir';
 export class Transacoes implements OnInit, OnDestroy {
   private readonly contaService = inject(ContaService);
   private readonly route = inject(ActivatedRoute);
+  private readonly notification = inject(NotificationService);
 
   private queryParamsSub: Subscription | null = null;
 
@@ -104,10 +106,16 @@ export class Transacoes implements OnInit, OnDestroy {
       next: (res: TransacaoResponse) => {
         this.comprovante.set(res);
         this.loading.set(false);
+        const messages: Record<Tab, string> = {
+          depositar: 'Depósito realizado com sucesso.',
+          sacar: 'Saque realizado com sucesso.',
+          transferir: 'Transferência realizada com sucesso.',
+        };
+        this.notification.success(messages[this.activeTab()]);
       },
       error: (err: HttpErrorResponse) => {
         this.loading.set(false);
-        this.error.set(err.error?.message || err.error || 'Erro ao processar transação.');
+        this.notification.error(httpErrorMessage(err, 'Não foi possível realizar a transação.'));
       },
     };
   }

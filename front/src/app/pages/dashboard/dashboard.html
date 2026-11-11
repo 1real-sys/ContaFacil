@@ -39,9 +39,6 @@
     } @else {
       <div class="empty-conta">
         <p>Você ainda não possui uma conta.</p>
-        @if (erroCriarConta()) {
-          <p class="empty-error">{{ erroCriarConta() }}</p>
-        }
         <button class="btn-create" (click)="criarConta()" [disabled]="criandoConta()">
           @if (criandoConta()) {
             <span class="spinner-white"></span>

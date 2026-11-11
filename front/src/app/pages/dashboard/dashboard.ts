@@ -8,6 +8,7 @@ import { ExtratoItem } from '../../models/extrato-response.model';
 import { FaturaResponse } from '../../models/fatura-response.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatLocalDate } from '../../core/local-date';
+import { NotificationService, httpErrorMessage } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,6 +21,7 @@ import { formatLocalDate } from '../../core/local-date';
 export class Dashboard implements OnInit {
   private readonly contaService = inject(ContaService);
   private readonly storage = inject(StorageService);
+  private readonly notification = inject(NotificationService);
   protected readonly router = inject(Router);
 
   conta = signal<ContaResponse | null>(null);
@@ -34,7 +36,6 @@ export class Dashboard implements OnInit {
   criandoConta = signal(false);
 
   balanceVisible = signal(true);
-  erroCriarConta = signal('');
 
   userName = signal(this.storage.getUserName() || 'Usuário');
 
@@ -60,18 +61,16 @@ export class Dashboard implements OnInit {
 
   criarConta(): void {
     this.criandoConta.set(true);
-    this.erroCriarConta.set('');
     this.contaService.abrirConta().subscribe({
       next: (c) => {
         this.conta.set(c);
         this.criandoConta.set(false);
+        this.notification.success('Conta criada com sucesso.');
         this.loadTransactions();
       },
       error: (err: HttpErrorResponse) => {
         this.criandoConta.set(false);
-        this.erroCriarConta.set(
-          err.error?.message || err.error || 'Erro ao criar conta.'
-        );
+        this.notification.error(httpErrorMessage(err, 'Não foi possível criar a conta.'));
       },
     });
   }

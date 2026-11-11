@@ -21,10 +21,6 @@
         <button class="btn-primary" (click)="showEmitirForm.set(true)">Emitir Cartão</button>
       } @else {
         <div class="emitir-form">
-          @if (emitirError()) {
-            <div class="alert alert-error small">{{ emitirError() }}</div>
-          }
-
           <div class="form-group">
             <label for="bandeira">Bandeira</label>
             <select id="bandeira" [(ngModel)]="bandeira" name="bandeira">
@@ -50,10 +46,6 @@
   } @else {
     @let card = cartaoPrincipal();
     @if (card) {
-      @if (acaoError()) {
-        <div class="alert alert-error">{{ acaoError() }}</div>
-      }
-
       <div class="credit-card" [class]="card.bandeira.toLowerCase()">
         <div class="cc-header">
           <span class="cc-bank">ContaFacil</span>

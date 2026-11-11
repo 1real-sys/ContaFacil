@@ -3,6 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { RegisterRequest } from '../../models/register-request.model';
+import { NotificationService } from '../../core/services/notification.service';
 
 interface RuleCheck {
   label: string;
@@ -20,6 +21,7 @@ interface RuleCheck {
 export class Register {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notification = inject(NotificationService);
 
   username = '';
   email = '';
@@ -68,11 +70,12 @@ export class Register {
     this.authService.register(data).subscribe({
       next: () => {
         this.loading.set(false);
+        this.notification.success('Conta criada com sucesso.');
         this.router.navigate(['/dashboard']);
       },
       error: (err: Error) => {
         this.loading.set(false);
-        this.error.set(err.message || 'Erro ao criar conta.');
+        this.notification.error(err.message || 'Não foi possível criar a conta.');
       },
     });
   }
